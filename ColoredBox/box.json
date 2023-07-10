@@ -12,21 +12,21 @@
 		{
 			"kind": "main",
 			"tag": "com-nttdata-ses-sample-box",
-			"url": "https://raw.githubusercontent.com/jedwardntt/estimator-gantt/main/box.js",
+			"url": "https://jedwardntt.github.io/ColoredBox/box.js",
 			"integrity": "",
 			"ignoreIntegrity": true
 		},
 		{
 			"kind": "styling",
 			"tag": "com-nttdata-ses-sample-box-styling",
-			"url": "https://raw.githubusercontent.com/jedwardntt/estimator-gantt/main/box_styling.js",
+			"url": "https://jedwardntt.github.io/ColoredBox/box_styling.js",
 			"integrity": "",
 			"ignoreIntegrity": true
 		},
 		{
 			"kind": "builder",
 			"tag": "com-nttdata-ses-sample-box-builder",
-			"url": "https://raw.githubusercontent.com/jedwardntt/estimator-gantt/main/box_builder.js",
+			"url": "https://jedwardntt.github.io/ColoredBox/box_builder.js",
 			"integrity": "",
 			"ignoreIntegrity": true
 		}
