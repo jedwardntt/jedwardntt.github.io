@@ -50,4 +50,5 @@
 	}
 
 	customElements.define("com-nttdata-ses-sample-box-builder", ColoredBoxBuilderPanel);
+	
 })();

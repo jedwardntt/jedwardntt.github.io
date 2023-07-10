@@ -43,4 +43,7 @@
 		}
 	}
 
-customElements.define("com-nttdata-ses-sample-box-styling", BoxStylingPanel);
+	customElements.define("com-nttdata-ses-sample-box-styling", BoxStylingPanel);
+
+})();
+
