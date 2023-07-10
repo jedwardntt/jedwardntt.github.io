@@ -1,0 +1,1 @@
+Please note that this custom widget is in development mode. The sub resource integrity check was disabled for at least one of the referenced Web components. Do not use this custom widget productively.
