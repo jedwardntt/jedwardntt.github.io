@@ -1,13 +1,13 @@
 (function()  {
 	let template = document.createElement("template");
 	template.innerHTML = `
-		<form id="form">
+		<form id="formb">
 			<fieldset>
-				<legend>Box Properties</legend>
+				<legend>Color Properties</legend>
 				<table>
 					<tr>
-						<td>Opacity</td>
-						<td><input id="builder_opacity" type="text" size="5" maxlength="5"></td>
+						<td>Color</td>
+						<td><input id="bps_color" type="text" size="10" maxlength="10"></td>
 					</tr>
 				</table>
 				<input type="submit" style="display:none;">
@@ -21,12 +21,12 @@
 		</style>
 	`;
 
-	class BoxBuilderPanel extends HTMLElement {
+	class BoxBps extends HTMLElement {
 		constructor() {
 			super();
 			this._shadowRoot = this.attachShadow({mode: "open"});
 			this._shadowRoot.appendChild(template.content.cloneNode(true));
-			this._shadowRoot.getElementById("form").addEventListener("submit", this._submit.bind(this));
+			this._shadowRoot.getElementById("formb").addEventListener("submit", this._submit.bind(this));
 		}
 
 		_submit(e) {
@@ -34,21 +34,20 @@
 			this.dispatchEvent(new CustomEvent("propertiesChanged", {
 					detail: {
 						properties: {
-							opacity: this.opacity
+							color: this.color
 						}
 					}
 			}));
 		}
 
-		set opacity(newOpacity) {
-			this._shadowRoot.getElementById("builder_opacity").value = newOpacity;
+		set color(newColor) {
+			this._shadowRoot.getElementById("bps_color").value = newColor;
 		}
 
-		get opacity() {
-			return this._shadowRoot.getElementById("builder_opacity").value;
+		get color() {
+			return this._shadowRoot.getElementById("bps_color").value;
 		}
 	}
 
-	customElements.define("com-nttdata-ses-sample-box-builder", BoxBuilderPanel);
-	
+	customElements.define("com-demo-gauge-bps", BoxBps);
 })();

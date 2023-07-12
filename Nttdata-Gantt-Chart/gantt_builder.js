@@ -21,7 +21,7 @@
 		</style>
 	`;
 
-	class BoxBuilderPanel extends HTMLElement {
+	class GanttBuilderPanel extends HTMLElement {
 		constructor() {
 			super();
 			this._shadowRoot = this.attachShadow({mode: "open"});
@@ -49,6 +49,6 @@
 		}
 	}
 
-	customElements.define("com-nttdata-ses-sample-box-builder", BoxBuilderPanel);
+	customElements.define("com-nttdata-ses-cw-gantt-builder", GanttBuilderPanel);
 	
 })();

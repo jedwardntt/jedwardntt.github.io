@@ -6,22 +6,16 @@
 				<legend>Box Properties</legend>
 				<table>
 					<tr>
-						<td>Opacity</td>
-						<td><input id="builder_opacity" type="text" size="5" maxlength="5"></td>
+						<td>Color</td>
+						<td><input id="styling_color" type="text" size="40" maxlength="40"></td>
 					</tr>
 				</table>
 				<input type="submit" style="display:none;">
 			</fieldset>
 		</form>
-		<style>
-		:host {
-			display: block;
-			padding: 1em 1em 1em 1em;
-		}
-		</style>
 	`;
 
-	class BoxBuilderPanel extends HTMLElement {
+	class GanttStylingPanel extends HTMLElement {
 		constructor() {
 			super();
 			this._shadowRoot = this.attachShadow({mode: "open"});
@@ -34,21 +28,22 @@
 			this.dispatchEvent(new CustomEvent("propertiesChanged", {
 					detail: {
 						properties: {
-							opacity: this.opacity
+							color: this.color
 						}
 					}
 			}));
 		}
 
-		set opacity(newOpacity) {
-			this._shadowRoot.getElementById("builder_opacity").value = newOpacity;
+		set color(newColor) {
+			this._shadowRoot.getElementById("styling_color").value = newColor;
 		}
 
-		get opacity() {
-			return this._shadowRoot.getElementById("builder_opacity").value;
+		get color() {
+			return this._shadowRoot.getElementById("styling_color").value;
 		}
 	}
 
-	customElements.define("com-nttdata-ses-sample-box-builder", BoxBuilderPanel);
-	
+	customElements.define("com-nttdata-ses-cw-gantt-styling", GanttStylingPanel);
+
 })();
+

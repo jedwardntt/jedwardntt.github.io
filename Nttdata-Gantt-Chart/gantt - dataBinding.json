@@ -1,9 +1,9 @@
 {
-	"id": "com.nttdata.ses.sample.box",
+	"id": "com.nttdata.ses.cw.gantt",
 	"version": "1.0.0",
-	"name": "Box",
-	"description": "A colored box",
-	"newInstancePrefix": "Box",
+	"name": "Gantt",
+	"description": "Gantt chart for estimations",
+	"newInstancePrefix": "Gantt",
 	"icon": "/icon.jpg",
 	"vendor": "J. Edward Ortiz",
 	"eula": "",
@@ -11,22 +11,15 @@
 	"webcomponents": [
 		{
 			"kind": "main",
-			"tag": "com-nttdata-ses-sample-box",
-			"url": "box.js",
+			"tag": "com-nttdata-ses-cw-gantt",
+			"url": "/gantt.js",
 			"integrity": "",
 			"ignoreIntegrity": true
 		},
 		{
 			"kind": "styling",
-			"tag": "com-nttdata-ses-sample-box-styling",
-			"url": "box_styling.js",
-			"integrity": "",
-			"ignoreIntegrity": true
-		},
-		{
-			"kind": "builder",
-			"tag": "com-nttdata-ses-sample-box-builder",
-			"url": "box_builder.js",
+			"tag": "com-nttdata-ses-cw-gantt-styling",
+			"url": "/gantt_styling.js",
 			"integrity": "",
 			"ignoreIntegrity": true
 		}
@@ -44,11 +37,11 @@
 		},
 		"width": {
 			"type": "integer",
-			"default": 100
+			"default": 400
 		},
 		"height": {
 			"type": "integer",
-			"default": 100
+			"default": 200
 		}
 	},
 	"methods": {
@@ -71,9 +64,26 @@
 	},
 	"events": {
 		"onClick": {
-			"description": "Called when the user clicks the Box."
+			"description": "Called when the user clicks the gantt."
 		}
 	}
+	
+	,"dataBindings": {
+		"myDataBinding": {
+			"feeds": [
+			  {
+				"id": "dimensions",
+				"description": "Dimensions",
+				"type": "dimension"
+			  },
+			  {
+				"id": "measures",
+				"description": "Measures",
+				"type": "mainStructureMember"
+			  }
+			]
+		}
+    }
 }
 
  

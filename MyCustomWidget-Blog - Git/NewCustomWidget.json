@@ -1,7 +1,7 @@
 {
-	"name": "MyCustomWidget-Local",
+	"name": "MyCustomWidget",
 	"description": "Hello World",
-	"newInstancePrefix": "mycustomwidgetlocal",
+	"newInstancePrefix": "mycustomwidget",
 	"eula": "",
 	"vendor": "J. Edward Ortiz",
 	"license": "",
@@ -12,7 +12,7 @@
 		{
 			"kind": "main",
 			"tag": "custom-button",
-			"url": "/Webcomponent.js",
+			"url": "https://kandpalpranav.github.io/CustomWidget/Webcomponent.js",
 			"integrity": ""	,
 			"ignoreIntegrity": true
 			
