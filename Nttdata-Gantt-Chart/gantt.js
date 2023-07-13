@@ -1,4 +1,89 @@
-let googleChartJSLibraryContent = `
+
+
+//=============================================================
+// Start: SAP Analytics Cloud - Custom Windget - NTT Data Gantt
+(function() { 
+	let _shadowRoot;
+	
+	let template = document.createElement("template");
+	template.innerHTML = `
+		<style>
+		:host {
+			border-radius: 25px;
+			border-width: 4px;
+			border-color: black;
+			border-style: solid;
+			display: block;
+		} 
+		</style> 
+		<div id="chart_div"></div>
+	`;
+	
+	
+
+	class Gantt extends HTMLElement {
+		constructor() {
+			console.log("=======> Debug - Constructor");
+			super(); 
+			let _shadowRoot = this.attachShadow({mode: "open"});
+			_shadowRoot.appendChild(template.content.cloneNode(true));
+			
+			this.addEventListener("click", event => {
+				var event = new Event("onClick");
+				this.dispatchEvent(event);
+			});
+			this._props = {};
+			
+
+			//=============================================================
+			// Start: Google Chart Code specific for Gantt
+			console.log("=======> Debug - Google Chart - Start init Gantt chart - step 1");
+
+			function daysToMilliseconds(days) {
+			  return days * 24 * 60 * 60 * 1000;
+			}
+
+			function drawChart() {
+
+			  var data = new google.visualization.DataTable();
+			  data.addColumn('string', 'Task ID');
+			  data.addColumn('string', 'Task Name');
+			  data.addColumn('date', 'Start Date');
+			  data.addColumn('date', 'End Date');
+			  data.addColumn('number', 'Duration');
+			  data.addColumn('number', 'Percent Complete');
+			  data.addColumn('string', 'Dependencies');
+
+			  data.addRows([
+				['Research', 'Find sources',
+				 new Date(2015, 0, 1), new Date(2015, 0, 5), null,  100,  null],
+				['Write', 'Write paper',
+				 null, new Date(2015, 0, 9), daysToMilliseconds(3), 25, 'Research,Outline'],
+				['Cite', 'Create bibliography',
+				 null, new Date(2015, 0, 7), daysToMilliseconds(1), 20, 'Research'],
+				['Complete', 'Hand in paper',
+				 null, new Date(2015, 0, 10), daysToMilliseconds(1), 0, 'Cite,Write'],
+				['Outline', 'Outline paper',
+				 null, new Date(2015, 0, 6), daysToMilliseconds(1), 100, 'Research']
+			  ]);
+
+			  var options = {
+				height: 275
+			  };
+
+			  var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+			  chart.draw(data, options);
+			  
+			} // End of: function drawChart()
+			//========================================================================================================
+			//========================================================================================================
+			//========================================================================================================
+			
+			
+			
+			
+			
+console.log("=======> Debug - Google Chart - Start load library");
 //=============================================================
 // Start: Google Chart Javascript Library (https://www.gstatic.com/charts/loader.js)
 
@@ -153,91 +238,28 @@ function Lc(a,b,c){var d=Fa[a];if(d){b=Kc(b,d.aliases);d=d.versions[b];if(!d)thr
 function Bc(a){return function(){if("function"===typeof a)a();else if("string"===typeof a&&""!==a)try{var b=B(a);if("function"!==typeof b)throw Error("Type of '"+a+"' is "+typeof b+".");b()}catch(c){throw Error("Callback of "+a+" failed with: "+c);}}}function Mc(){var a=la.apply(0,arguments);switch(a[0]){case "maps":Gc.apply(null,ea(a));break;case "elements":Ic.apply(null,ea(a));break;case "visualization":Dc.apply(null,ea(a));break;default:Lc.apply(null,ea(a))}}D("google.loader.LoadFailure",!1);
 if(sc)console.warn("Google Charts loader.js should only be loaded once.");else{Y=X="";rc=Z=qc=null;B("google.load")||(D("google.load",Mc),D("google.setOnLoadCallback",Cc));var Nc=document.getElementsByTagName("script"),Oc=(document.currentScript||Nc[Nc.length-1]).getAttribute("src"),Pc=new L(Oc),Qc=Pc.g;sc=Qc=Qc.match(/^www\.gstatic\.cn/)?"gstatic.cn":"gstatic.com";var Rc=new N(Pc.i.toString()),Sc=Rc.get("callback");if("string"===typeof Sc){var Tc=Bc(Sc);pc().then(Tc)}var Uc=Rc.get("autoload");if("string"===
 typeof Uc)try{if(""!==Uc)for(var Vc=JSON.parse(Uc).modules,Wc=0;Wc<Vc.length;Wc++){var Xc=Vc[Wc];Mc(Xc.name,Xc.version,Xc)}}catch(a){throw Error("Autoload failed with: "+a);}};}).call(this);
-
-//=============================================================
-// Start: Google Chart Code specific for Gantt
-
-    google.charts.load('current', {'packages':['gantt']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    function daysToMilliseconds(days) {
-      return days * 24 * 60 * 60 * 1000;
-    }
-
-    function drawChart() {
-
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Task ID');
-      data.addColumn('string', 'Task Name');
-      data.addColumn('date', 'Start Date');
-      data.addColumn('date', 'End Date');
-      data.addColumn('number', 'Duration');
-      data.addColumn('number', 'Percent Complete');
-      data.addColumn('string', 'Dependencies');
-
-      data.addRows([
-        ['Research', 'Find sources',
-         new Date(2015, 0, 1), new Date(2015, 0, 5), null,  100,  null],
-        ['Write', 'Write paper',
-         null, new Date(2015, 0, 9), daysToMilliseconds(3), 25, 'Research,Outline'],
-        ['Cite', 'Create bibliography',
-         null, new Date(2015, 0, 7), daysToMilliseconds(1), 20, 'Research'],
-        ['Complete', 'Hand in paper',
-         null, new Date(2015, 0, 10), daysToMilliseconds(1), 0, 'Cite,Write'],
-        ['Outline', 'Outline paper',
-         null, new Date(2015, 0, 6), daysToMilliseconds(1), 100, 'Research']
-      ]);
-
-      var options = {
-        height: 275
-      };
-
-      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
-      chart.draw(data, options);
-	  
-    } // End of: function drawChart()
-`;	
-	
-//=============================================================
-// Start: SAP Analytics Cloud - Custom Windget - NTT Data Gantt
-(function() { 
-	let _shadowRoot;
-	
-	let template = document.createElement("template");
-	template.innerHTML = `
-		<style>
-		:host {
-			border-radius: 25px;
-			border-width: 4px;
-			border-color: black;
-			border-style: solid;
-			display: block;
-		} 
-		</style> 
-		<div id="chart_div"></div>
-	`;
-	
-	
-
-	class Gantt extends HTMLElement {
-		constructor() {
-			console.log("=======> Debug - Constructor");
-			super(); 
-			let _shadowRoot = this.attachShadow({mode: "open"});
-			_shadowRoot.appendChild(template.content.cloneNode(true));
 			
-			this.addEventListener("click", event => {
-				var event = new Event("onClick");
-				this.dispatchEvent(event);
-			});
-			this._props = {};
 			
-			console.log("=======> Debug - Google Chart - Start");
-			let googleChartElement       = document.createElement("script");
-			googleChartElement.type      = 'text/javascript';
-			googleChartElement.innerHTML = googleChartJSLibraryContent;
-			_shadowRoot.appendChild(googleChartElement);
-//			drawChart();
+			
+			
+			
+			
+			
+			
+			//========================================================================================================
+			//========================================================================================================
+			//========================================================================================================
+			console.log("=======> Debug - Google Chart - Start init Gantt chart - step 2");
+			//google.charts.load('current', {'packages':['gantt']});
+			google.charts.load('current', {'packages':['gantt'],callback: drawChart});
+			//google.charts.load('current', {'packages':['gantt']});
+			//google.charts.setOnLoadCallback(drawChart);
+	
+			console.log("=======> Debug - Google Chart - Start init Gantt chart - step 3");
+			//google.charts.setOnLoadCallback(drawChart);
+			console.log("=======> Debug - Google Chart - Start init Gantt chart - step 4");
+			//drawChart();
+			
 		}
 
 		onCustomWidgetBeforeUpdate(changedProperties) {
