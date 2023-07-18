@@ -30,9 +30,9 @@
 	function drawChart() {
 	
 		var data = new google.visualization.DataTable();
-		data.addColumn('string', 'Task ID'); 		data.addColumn('string', 'Task Name');		data.addColumn('string', 'Resource');
-		data.addColumn('date',   'Start Date');		data.addColumn('date',   'End Date');		data.addColumn('number', 'Duration');
-		data.addColumn('number', 'Percent Complete');		data.addColumn('string', 'Dependencies');
+		data.addColumn('string', 'Task ID'); 		  data.addColumn('string', 'Task Name');	data.addColumn('string', 'Resource');
+		data.addColumn('date',   'Start Date');		  data.addColumn('date',   'End Date');		data.addColumn('number', 'Duration');
+		data.addColumn('number', 'Percent Complete'); data.addColumn('string', 'Dependencies');
 
 		data.addRows([
 		  ['1_Preparacion', 'I. Preparación del proyecto', null, new Date(2023, 9, 1), new Date(2023, 9, 6) , null,  100,  null], 
@@ -72,20 +72,16 @@
 		  ['5.1_Despliegue', 'Despliegue a producción', 'Arranque', 				new Date(2023, 9, 21), new Date(2023, 9, 22), null,  100,  '5_Arranque'],
 		  ['5.2_Soporte', 'Soporte', 'Arranque', 									new Date(2023, 9, 22), new Date(2023, 9, 23), null,  100,  '5_Arranque'],
 		  ['5.3_Cierre', 'Cierre de proyecto', 'Arranque',							new Date(2023, 9, 23), new Date(2023, 9, 25), null,  100,  '5_Arranque'],
-
-		   /*
-		  
-		  ['Cite', 'Create bibliography',
-		   null, new Date(2015, 0, 7), daysToMilliseconds(1), 20, '1_Preparacion'],
-		  ['Complete', 'Hand in paper',
-		   null, new Date(2015, 0, 10), daysToMilliseconds(1), 0, 'Cite,1.1_Validacion'],
-		  ['Outline', 'Outline paper',
-		   null, new Date(2015, 0, 6), daysToMilliseconds(1), 100, '1_Preparacion']
-		   */
 		]);
 	
 		var options = {
-		  //height: 275
+		  gantt: {
+			trackHeight: 17,
+			barHeight:   17,
+			labelStyle: {
+				fontSize: 10
+			  },
+		  }
 		};
 
 		//var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
