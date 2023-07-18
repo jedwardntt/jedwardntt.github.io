@@ -1,5 +1,16 @@
 <html>
 <head>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.gstatic.com https://sapui5.hana.ondemand.com https://sapui5.cn1.platform.sapcloud.cn https://internal.orca-cdn-canary.c.eu-de-1.cloud.sap https://*.sapanalytics.cloud https://assets.sapanalyticscloud.cn https://orcadevproxy.sap.corp:* https://askmode.orcatools.only.sap https://js.arcgis.com https://js.arcgisonline.cn ;" >
+  
+  <!-- 
+    Original
+ <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' https://sapui5.hana.ondemand.com https://sapui5.cn1.platform.sapcloud.cn https://internal.orca-cdn-canary.c.eu-de-1.cloud.sap https://*.sapanalytics.cloud https://assets.sapanalyticscloud.cn https://orcadevproxy.sap.corp:* https://askmode.orcatools.only.sap https://js.arcgis.com https://js.arcgisonline.cn blob: 'nonce-8IBTHwOdqNKAWeKl7plt8g==';" >
+  -->
+  
+<!--
+  'nonce-4ae3bf75-6b53-491c-a239-56c7abdfdf91'
+-->
+
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
     //google.charts.load('current', {'packages':['gantt'],callback: drawChart});
@@ -38,10 +49,7 @@
         height: 275
       };
 
-      //var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
-      let nttGanttElements = document.getElementsByTagName("com-nttdata-ses-cw-gantt");
-      const nttGanttShadow = nttGanttElements[0].shadowRoot;
-      var chart = new google.visualization.Gantt(nttGanttShadow.querySelector("#chart_div"));
+      var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
 
       chart.draw(data, options);
     }
@@ -51,6 +59,5 @@
   <div id="otro_div"></div>
   <div id="chart_div"></div>
   
-  <com-nttdata-ses-cw-gantt class="sapCustomWidgetWebComponent" style="background-color: red; opacity: 1;"></com-nttdata-ses-cw-gantt>
 </body>
 </html>
