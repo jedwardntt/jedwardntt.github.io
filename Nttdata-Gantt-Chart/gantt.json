@@ -35,7 +35,7 @@
 		"height": {
 			"type": "integer",
 			"default": 300
-		}
+		}		
 	},
 	"methods": {
 		"setColor": {
@@ -53,6 +53,64 @@
 			"returnType": "string",
 			"description": "Returns the background color.",
 			"body": "return this.color;"
+		},
+		"collapsePhase": {
+			"description": "Collapse tasks for a phase.",
+			"parameters": [
+				{
+					"name": "phaseId",
+					"type": "string",
+					"description": "The id if the phase to collapse"
+				}
+			],
+			"body": "this.color = phaseId;"
+		},
+		"expandPhase": {
+			"description": "Expand tasks for a phase.",
+			"parameters": [
+				{
+					"name": "phaseId",
+					"type": "string",
+					"description": "The id if the phase to expand"
+				}
+			],
+			"body": "this.color = phaseId;"
+		},
+		"setTaskDuration": {
+			"description": "Sets the duration of a task.",
+			"parameters": [
+				{
+					"name": "taskId",
+					"type": "string",
+					"description": "The id of the task to set the duration"
+				},
+				{
+					"name": "newDuration",
+					"type": "number",
+					"description": "The new duration"
+				}
+			],
+			"body": "this.color = taskId;"
+		},
+		"setTaskStartDate": {
+			"description": "Sets the start date of a task.",
+			"parameters": [
+				{
+					"name": "taskId",
+					"type": "string",
+					"description": "The id of the task to set the new start date"
+				},
+				{
+					"name": "newStartDate",
+					"type": "string",
+					"description": "The new start date in format 'yyyy-mm-dd'"
+				}
+			],
+			"body": "this.color = taskId;"
+		},
+		"clearGanttChart": {
+			"description": "Remove all tasks.",
+			"body": "this.color = \"red\";"
 		}
 	},
 	"events": {

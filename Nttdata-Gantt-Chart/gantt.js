@@ -1,30 +1,39 @@
 //=============================================================
 // Start: SAP Analytics Cloud - Custom Windget - NTT Data Gantt
+
+const nttDebug = true;
+
+// Global variable for the Google Gantt Chart
+let _ganttChart;
+
+// Global variable for the Google Gantt Chart data
+let _ganttChartData;
+
+// Generic function to load JavaScript libraries into the custom widget
+function loadScript(url,shadowRoot, callbackFunction) {
+	const script = document.createElement('script');
+	script.type  = 'text/javascript';
+	script.src  = url;
+	script.addEventListener("load", callbackFunction);
+	script.nonce = document.getElementsByTagName("script")[0].nonce; // Importante para que no de error de: Content-Security-Policy
+	if(nttDebug==1)console.log("=======> Debug NTT - Nonce value: "+document.getElementsByTagName("script")[0].nonce);
+	shadowRoot.appendChild(script);
+};
+
+// Function to convert days into milliseconds, to be used in the Google Gantt Chart
+function daysToMilliseconds(days) {
+	return days * 24 * 60 * 60 * 1000;
+}
+
 (function() { 
-	const nttDebug = true;
+	
 
 	let _shadowRoot;
-
-	let template = document.createElement("template");
-	template.innerHTML = `
-		<div id="chart_div" style="width: 100%; height: 100%; overflow: auto;"></div>
-	`;
 	
-	// Se crea una función genérica para cargar bibliotecas JavaScript necesarias para el widget
-	function loadScript(url,shadowRoot, callbackFunction) {
-		const script = document.createElement('script');
-		script.type  = 'text/javascript';
-		script.src  = url;
-		script.addEventListener("load", callbackFunction);
-		script.nonce = document.getElementsByTagName("script")[0].nonce; // Importante para que no de error de: Content-Security-Policy
-		if(nttDebug==1)console.log("=======> Debug NTT - Nonce value: "+document.getElementsByTagName("script")[0].nonce);
-		shadowRoot.appendChild(script);
-	};
+	let template = document.createElement("template");
+	template.innerHTML = `<div id="chart_div" style="width: 100%; height: 100%; overflow: auto;"></div>`;
+	
 
-	// Fundción necesaria para el gantt
-	function daysToMilliseconds(days) {
-		return days * 24 * 60 * 60 * 1000;
-	}
 	
 	// Inicializar y dibujar el gantt
 	function drawChart() {
@@ -77,7 +86,7 @@
 		var options = {
 		  gantt: {
 			trackHeight: 17,
-			barHeight:   17,
+			barHeight:   12,
 			labelStyle: {
 				fontSize: 10
 			  },
@@ -88,12 +97,26 @@
 		let nttGanttElements  = document.getElementsByTagName("com-nttdata-ses-cw-gantt");
 		const _shadowRoot     = nttGanttElements[0].shadowRoot;
 		const chartDivElement = _shadowRoot.getElementById("chart_div");
-		var chart = new google.visualization.Gantt(chartDivElement); 
+		_ganttChart = new google.visualization.Gantt(chartDivElement); 
 	
-		chart.draw(data, options);
+		_ganttChartData    = data;
+		_ganttChartOptions = options; 
+		_ganttChart.draw(_ganttChartData, _ganttChartOptions);
+	}
+
+	function hidePhase(phaseId){ // phaseId values: '1_Preparacion', '2_Analisis', '3_Implantacion', '4_Pruebas' y '5_Arranque'
+		let nttGanttElements  = document.getElementsByTagName("com-nttdata-ses-cw-gantt");
+		const _shadowRoot     = nttGanttElements[0].shadowRoot;
+		const chartDivElement = _shadowRoot.getElementById("chart_div");
+		var chart = new google.visualization.Gantt(chartDivElement);
+	}
+
+	function showPhase(phaseId){
+
 	}
 
 	class Gantt extends HTMLElement {
+
 		constructor() {
 			if(nttDebug==1)console.log("=======> Debug NTT - Constructor");
 			super(); 
@@ -108,15 +131,17 @@
 
 			//=============================================================
 			if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start chart render");
-			// Cargar la biblioteca JavaScript de Google Chart
+			// Load JavaScript Google Chart library
 			loadScript("https://www.gstatic.com/charts/loader.js",_shadowRoot,function(){
 				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - JavaScript library loaded");
 				// Cargar el paquete de gráficos de gantt
 				google.charts.load('current', {'packages':['gantt']});
-				// Invocar a la función drawChart
-				google.charts.setOnLoadCallback(drawChart);	
-
-
+				// Call to drawChart function 
+				google.charts.setOnLoadCallback(drawChart);
+				// Save the google gant chart to Gantt class' attribute:
+				this.ganttChart = _ganttChart;
+				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - ganttChart content:");
+				if(nttDebug==1)console.log(this.ganttChart);
 			});
 
 		}
