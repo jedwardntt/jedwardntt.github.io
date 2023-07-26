@@ -3,30 +3,8 @@
 
 const nttDebug = true;
 
-// Global variable for the Google Gantt Chart
-var _ganttChart;
-
-// Global variable for the Google Gantt Chart data
-var _ganttChartData;
-
-// Global variable for the Google Gantt Chart options
-var _ganttChartOptions;
-
-// Generic function to load JavaScript libraries into the custom widget
-function loadScript(url,shadowRoot, callbackFunction) {
-	const script = document.createElement('script');
-	script.type  = 'text/javascript';
-	script.src  = url;
-	script.addEventListener("load", callbackFunction);
-	script.nonce = document.getElementsByTagName("script")[0].nonce; // Importante para que no de error de: Content-Security-Policy
-	if(nttDebug==1)console.log("=======> Debug NTT - Nonce value: "+document.getElementsByTagName("script")[0].nonce);
-	shadowRoot.appendChild(script);
-};
-
-// Function to convert days into milliseconds, to be used in the Google Gantt Chart
-function daysToMilliseconds(days) {
-	return days * 24 * 60 * 60 * 1000;
-}
+// Global variable for the Html Element Gantt (for development propose)
+var _htmlElementGantt;
 
 (function() { 
 	
@@ -41,7 +19,7 @@ function daysToMilliseconds(days) {
 
 	
 	// Inicializar y dibujar el gantt
-	function drawChart() {
+	function drawChart(htmlElementGantt) {
 	
 		var data = new google.visualization.DataTable();
 		data.addColumn('string', 'Task ID'); 		  data.addColumn('string', 'Task Name');	data.addColumn('string', 'Resource');
@@ -110,17 +88,34 @@ function daysToMilliseconds(days) {
 		  height: '100%'
 		};
 
-		//var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
-		let nttGanttElements  = document.getElementsByTagName("com-nttdata-ses-cw-gantt");
-		const _shadowRoot     = nttGanttElements[0].shadowRoot;
-		const chartDivElement = _shadowRoot.getElementById("chart_div");
-		_ganttChart = new google.visualization.Gantt(chartDivElement); 
-	
-		_ganttChartData    = data;
-		_ganttChartOptions = options; 
-		_ganttChart.draw(_ganttChartData, _ganttChartOptions);
+		// var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
+		// let nttGanttElements  = document.getElementsByTagName("com-nttdata-ses-cw-gantt");
+		// const chartDivElement = nttGanttElements[0].shadowRoot.getElementById("chart_div");
+		// var   chart			  = new google.visualization.Gantt(chartDivElement); 
 
-		_ganttChartData.updateTask = function (taskId, taskProperty, newValue){ // taskProperty values: 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'
+		const chartDivElement = htmlElementGantt.shadowRoot.getElementById("chart_div");
+		var   chart			  = new google.visualization.Gantt(chartDivElement); 
+		chart.draw(data, options);
+
+		//=============================================================
+		// Save the google gant chart to Gantt class' attribute:
+		htmlElementGantt.chart = chart;
+		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - chart content:");
+		//if(nttDebug==1)console.log(htmlElementGantt.chart);
+
+		htmlElementGantt.data = data;
+		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - data content:");
+		//if(nttDebug==1)console.log(htmlElementGantt.data);
+
+		htmlElementGantt.options = options;
+		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - options content:");
+		//if(nttDebug==1)console.log(htmlElementGantt.options);
+
+		if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 1");
+
+		//=============================================================
+		// taskProperty values: 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'
+		data.updateTask = function (taskId, taskProperty, newValue){ 
 			var taskRow = null;
 			for (var i = 0; i < this.getNumberOfRows(); i++) {
 				var iTaskId = this.getValue(i, 0); // Task ID
@@ -133,11 +128,6 @@ function daysToMilliseconds(days) {
 				}
 			}
 			var columnIndexes = [null,'Task Name','Resource', 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'];
-			/*
-			data.addColumn('string', 'Task ID'); 		  data.addColumn('string', 'Task Name');	data.addColumn('string', 'Resource');
-			data.addColumn('date',   'Start Date');		  data.addColumn('date',   'End Date');		data.addColumn('number', 'Duration');
-			data.addColumn('number', 'Percent Complete'); data.addColumn('string', 'Dependencies');
-			*/
 			var propertyIndex = columnIndexes.indexOf(taskProperty);
 			if( taskRow != null && propertyIndex > 0 ){
 				console.log("taskRow: "+taskRow.toString()+" | propertyIndex: "+propertyIndex.toString());
@@ -152,7 +142,8 @@ function daysToMilliseconds(days) {
 			}
 		}
 
-		_ganttChartData.printTasks = function (){
+		//=============================================================
+		data.printTasks = function (){
 			console.log("\tTask ID\t|\tTask name\t|\tStart\t|\tEnd\t|\tDuration\t|\tDependencies");
 			for (var i = 0; i < this.getNumberOfRows(); i++) {
 				var s = this.getValue(i, 2); // Start
@@ -175,27 +166,36 @@ function daysToMilliseconds(days) {
 				);
 			}
 		}
+
+		if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 2");
 	}
 
-	function hideStage(stageId){ // stageId values: '1_Preparation', '2_Analysis', '3_Implementation', '4_Testing' y '5_Close'
-		let nttGanttElements  = document.getElementsByTagName("com-nttdata-ses-cw-gantt");
-		const _shadowRoot     = nttGanttElements[0].shadowRoot;
-		const chartDivElement = _shadowRoot.getElementById("chart_div");
-		var chart = new google.visualization.Gantt(chartDivElement);
+	// ===================== Auxiliar functions =================================
+	
+	// Generic function to load JavaScript libraries into the custom widget
+	function loadScript(url,shadowRoot, callbackFunction) {
+		const script = document.createElement('script');
+		script.type  = 'text/javascript';
+		script.src  = url;
+		script.addEventListener("load", callbackFunction);
+		script.nonce = document.getElementsByTagName("script")[0].nonce; // Importante para que no de error de: Content-Security-Policy
+		//if(nttDebug==1)console.log("=======> Debug NTT - Nonce value: "+document.getElementsByTagName("script")[0].nonce);
+		shadowRoot.appendChild(script);
 	}
 
-	function showStage(stageId){
-
+		// Function to convert days into milliseconds, to be used in the Google Gantt Chart
+	function daysToMilliseconds(days) {
+		return days * 24 * 60 * 60 * 1000;
 	}
-
+	
+	// Main class for the Gantt chart custom widget
 	class Gantt extends HTMLElement {
 
 		constructor() {
-			if(nttDebug==1)console.log("=======> Debug NTT - Constructor");
+			//if(nttDebug==1)console.log("=======> Debug NTT - Constructor");
 			super(); 
 			let _shadowRoot = this.attachShadow({mode: "open"});
 			_shadowRoot.appendChild(template.content.cloneNode(true));
-
 			this.addEventListener("click", event => {
 				var event = new Event("onClick");
 				this.dispatchEvent(event);
@@ -203,28 +203,24 @@ function daysToMilliseconds(days) {
 			this._props = {};
 
 			//=============================================================
-			if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start chart render");
+			   _htmlElementGantt = this; // save this class as a global var to debug and development propose
+			var htmlElementGantt = this; // create this temporary var to pass to drawChart() function as parameter
 			// Load JavaScript Google Chart library
+			if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start load library");
 			loadScript("https://www.gstatic.com/charts/loader.js",_shadowRoot,function(){
-				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - JavaScript library loaded");
 				// Cargar el paquete de gráficos de gantt
 				google.charts.load('current', {'packages':['gantt']});
-
-				// google.charts.load('current', {'packages':['corechart'], 'language': 'ja'});
-
+				// --> to check in the future the gantt translation -> google.charts.load('current', {'packages':['corechart'], 'language': 'ja'});
 				// Call to drawChart function 
-				google.charts.setOnLoadCallback(drawChart);
-				// Save the google gant chart to Gantt class' attribute:
-				this.ganttChart = _ganttChart;
-				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - ganttChart content:");
-				if(nttDebug==1)console.log(this.ganttChart);
+				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start grantt draw");
+				google.charts.setOnLoadCallback(function(){
+					drawChart(htmlElementGantt);
+				});
 			});
-
 		}
 
 		onCustomWidgetBeforeUpdate(changedProperties) {
 			if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetBeforeUpdate");
-			
 			this._props = { ...this._props, ...changedProperties };
 		}
 
@@ -251,31 +247,47 @@ function daysToMilliseconds(days) {
 		}
 
 		setStartDate(startDate){ // Date formar: yyyymmdd
+			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
+			this.startDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
+			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
+			this.data.updateTask('1_Preparation', 'Start Date', new Date(this.startDate));
+			this.refresh();
+		}
+
+		setTaskProperty(taskId, propertyName, newValue){
+			if(nttDebug==1)console.log("=======> Debug NTT - setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
+			this.data.updateTask(taskId, propertyName, newValue);
+			this.refresh();
+		}
+		// _htmlElementGantt.setTaskProperty('1_Preparation','Duration',3);
+
+		getTaskProperty(taskId){
 			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
 			var convertedDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
 			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Converted date: "+convertedDate);
 			this.startDate = convertedDate;
 			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
-			_ganttChartData.updateTask('1_Preparation', 'Start Date', new Date(this.startDate));
-			_ganttChart.draw(_ganttChartData, _ganttChartOptions);
+		}		
+
+		// Update the gantt's user interface to show recent changes
+		refresh() {
+			if(nttDebug==1)console.log("=======> Debug NTT - refresh()");
+			this.chart.draw(this.data, this.options);
 		}
 
-		clearChart() {
+		reset() {
 			if(nttDebug==1)console.log("=======> Debug NTT - clearChart");
 			/*
 			var data = new google.visualization.DataTable();
 			data.addColumn('string', 'Task ID'); 		  data.addColumn('string', 'Task Name');	data.addColumn('string', 'Resource');
 			data.addColumn('date',   'Start Date');		  data.addColumn('date',   'End Date');		data.addColumn('number', 'Duration');
 			data.addColumn('number', 'Percent Complete'); data.addColumn('string', 'Dependencies');
-			_ganttChartData = data;
-			_ganttChart.drawChart(_ganttChartData, _ganttChartOptions);*/
-			
-			_ganttChartData.removeRow(0);
+			//this.chart.removeRow(0);
 			
 			//google.charts.setOnLoadCallback(drawChart);
 			if(nttDebug==1)console.log("=======> Debug NTT - clearChart -- v1"); 
+			*/
 		}
-
 		
 	}
 
