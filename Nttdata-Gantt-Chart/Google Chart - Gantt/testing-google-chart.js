@@ -1,3 +1,8 @@
+_htmlElementGantt.data.printTasks();
+
+
+
+//========================================================================================================
 data.addRows([
     ['Nuevo', 'Tarea nueva',
     null, new Date(2015, 0, 6), daysToMilliseconds(1), 100,  'Outline']

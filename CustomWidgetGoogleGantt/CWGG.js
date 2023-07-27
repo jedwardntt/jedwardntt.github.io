@@ -72,11 +72,6 @@ let rootGlobal = null;
 				google.charts.setOnLoadCallback(drawChart);
 			});
 			shadowRoot.appendChild(script);
-
-			const script2 = document.createElement('script');
-			script2.type  = 'text/javascript';
-			script2.src   = "https://momentjs.com/downloads/moment.js";
-			shadowRoot.appendChild(script2);
 		}
 
 		onCustomWidgetBeforeUpdate(changedProperties) {

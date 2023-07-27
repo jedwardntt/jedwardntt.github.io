@@ -12,7 +12,8 @@ var _htmlElementGantt;
 
 	let template = document.createElement("template");
 	template.innerHTML = `<div id="project_title" style="font-size: 16px; line-height: 19px; color: rgb(88, 89, 91); fill: rgb(88, 89, 91); font-family: "72-Web";">Project title</div>`;
-	template.innerHTML += `<div id="chart_div" style="width: 100%; height: 100%; overflow: auto;"></div>`;
+	template.innerHTML += `<div id="chart_div" style="width: 100%; "></div>`;
+	// height: 100%; overflow: auto;
 	
 	// Project stages based on:
 	// https://www.cloud4c.com/sap/blogs/7-key-stages-your-sap-implementation-journey
@@ -28,20 +29,20 @@ var _htmlElementGantt;
 
 		data.addRows([
 		  ['1_Preparation', 'I. Preparación del proyecto', null, 					new Date("2023-07-22"), null, daysToMilliseconds(1),  100,  null], 
-		  /*
-		  ['1.1_Alcance', 'Validación alcance y equipos', 'Preparación', 				  new Date(2023, 9, 1), null, daysToMilliseconds(0.5), 25,  '1_Preparacion'],///'1_Preparacion'
-		  ['1.2_Planificacion', 'Validación planificación proyecto', 'Preparación', null, new Date(2023, 9, 3), daysToMilliseconds(1), 25,  '1_Preparation'],///'1_Preparacion'
-		  ['1.3_Accesos', 'Accesos y permisos a sistemas', 'Preparación', null,           new Date(2023, 9, 4), daysToMilliseconds(1), 20,  '1_Preparation'],///'1_Preparacion'
-		  ['1.4_Kickoff', 'Reunión de lanzamiento - kickoff', 'Preparación', null,        new Date(2023, 9, 5), daysToMilliseconds(1), 0,   '1_Preparation'],///'1_Preparacion'
-		  ['1.5_Prep_Entornos', 'Preparación de entornos', 'Preparación', null,           new Date(2023, 9, 6), daysToMilliseconds(1), 100, '1_Preparation'],///'1_Preparacion'
-		  */
-		  ['2_Analysis', 'II. Análisis y Diseño', null, 							null, null,  daysToMilliseconds(1),  100,  '1_Preparation'],
+		  ['1.1_Alcance', 'Validación alcance y equipos', 'Preparación', new Date("2023-07-22"), 			null, daysToMilliseconds(1), 25,'1_Preparation'],///'1_Preparation'
+		  ['1.2_Planificacion', 'Validación planificación proyecto', 'Preparación', new Date("2023-07-22"), null, daysToMilliseconds(1), 25,  '1_Preparation'],///'1_Preparation'
+		  ['1.3_Accesos', 'Accesos y permisos a sistemas', 'Preparación', new Date("2023-07-22"),           null, daysToMilliseconds(1), 20,  '1_Preparation'],///'1_Preparation'
+		  ['1.4_Kickoff', 'Reunión de lanzamiento - kickoff', 'Preparación', new Date("2023-07-22"),        null, daysToMilliseconds(1), 0,   '1_Preparation'],///'1_Preparation'
+		  ['1.5_Prep_Entornos', 'Preparación de entornos', 'Preparación', new Date("2023-07-22"),           null, daysToMilliseconds(1), 100, '1_Preparation'],///'1_Preparation'
+
+		  ['2_Analysis', 'II. Análisis y Diseño', null, 							null, null, daysToMilliseconds(1),  100,  '1_Preparation'],
 		  /*
 		  ['2.1_Origenes', 'Análisis sistemas origen', 'Analisis',					new Date(2023, 9, 7), new Date(2023, 9, 8),   null,  100,  '2_Analysis'],//'2_Analisis'
 		  ['2.2_AF', 'Anáisis y Diseño Funcional', 'Analisis',						new Date(2023, 9, 8), new Date(2023, 9, 9),   null,  100,  '2_Analysis'],//'2_Analisis'
 		  ['2.3_DT', 'Diseño Técnico', 'Analisis', 									new Date(2023, 9, 9), new Date(2023, 9, 10),  null,  100,  '2_Analysis'],//'2_Analisis'
 		  ['2.4_AprobacionDFDT', 'Aprobación diseño funcional y técnico', 'Analisis', new Date(2023, 9, 9), new Date(2023, 9, 10), null, 100,  '2_Analysis'],//'2_Analisis'
 		  */
+		 
 		  ['3_Implementation', 'III. Implantación', null, 							null, null,  daysToMilliseconds(1),  100,  '2_Analysis'],
 		  /* 
 		  ['3.1_Content', 'Activación del Content', 'Implantacion', 				new Date(2023, 9, 11), new Date(2023, 9, 12), null,  100,  '3_Implementation'],
@@ -56,6 +57,7 @@ var _htmlElementGantt;
 			['3.8.2_Formulas', 'Lógicas sencillas/Fórmulas', 'Implantacion', 		new Date(2023, 9, 14), new Date(2023, 9, 15), null,  100,  '3_Implementation'],
 			['3.8.3_BADIs', 'Lógicas complejas (BADIs) - Programación API', 'Implantacion', new Date(2023, 9, 15), new Date(2023, 9, 15), null,  100,  '3_Implementation'],
 		  */
+
 		  ['4_Testing', 'IV. Plan de Pruebas', null, 								null, null,  daysToMilliseconds(1),  100,  '3_Implementation'],
 		  /*
 		  ['4.1_Unitarias', 'Pruebas Unitarias y paso a Integración', 'Pruebas', 	new Date(2023, 9, 16), new Date(2023, 9, 17), null,  100,  '4_Testing'],
@@ -64,6 +66,7 @@ var _htmlElementGantt;
 		  ['4.4_Adaptaciones', 'Adaptaciones', 'Pruebas', 							new Date(2023, 9, 19), new Date(2023, 9, 20), null,  100,  '4_Testing'],
 		  ['4.5_Aceptacion', 'Pruebas de Aceptación', 'Pruebas', 					new Date(2023, 9, 19), new Date(2023, 9, 20), null,  100,  '4_Testing'],
 		  */
+		 
 		  ['5_Close', 'V. Arranque y Soporte', null, 								null, null,  daysToMilliseconds(1),  100,  '4_Testing'],
 		  /*
 		  ['5.1_Despliegue', 'Despliegue a producción', 'Arranque', 				new Date(2023, 9, 21), new Date(2023, 9, 22), null,  100,  '5_Close'],
@@ -78,14 +81,37 @@ var _htmlElementGantt;
 			barHeight:   12,
 			labelStyle: {
 				fontSize: 10
-			}
+			},
+			arrow: {
+				angle: 100,
+				width: 0,
+				color: 'silver',
+				radius: 0
+			},
+			criticalPathStyle: {
+				stroke: 'silver',
+				strokeWidth: 0
+			},
+			percentEnabled: false,
+			palette: [
+				{
+					"color": "#354a5f",// default
+					"dark": "#eff4f9", // over
+					"light": "#e3e3e3" // others
+				},
+				{
+					"color": "#71706e",// default
+					"dark": "#eff4f9", // over
+					"light": "#e3e3e3" // others
+				}				
+			  ]
 		  },
 		  backgroundColor:  {
 			'fill': 'white',
 			'opacity': 0
 		 },
-		  width: '100%',
-		  height: '100%'
+		  width: '100%'
+		  //,height: '100%'
 		};
 
 		// var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
@@ -144,24 +170,29 @@ var _htmlElementGantt;
 
 		//=============================================================
 		data.printTasks = function (){
-			console.log("\tTask ID\t|\tTask name\t|\tStart\t|\tEnd\t|\tDuration\t|\tDependencies");
+			console.log("\tTask ID\t|\tTask name\t|\tResource\t|\tStart\t|\tEnd\t|\tDuration\t|\tDependencies");
 			for (var i = 0; i < this.getNumberOfRows(); i++) {
-				var s = this.getValue(i, 2); // Start
+				var s = this.getValue(i, 3); // Start
 				var ss = null
 				if(s != null){
 					ss = s.getFullYear()+"-"+s.getMonth()+"-"+s.getDate();
-				}else{ ss = "null" }
-				var e = this.getValue(i, 3); // End
+				}else{ 
+					ss = "null" 
+				}
+				var e = this.getValue(i, 4); // End
 				var es = null
 				if(e != null){
 					es = e.getFullYear()+"-"+e.getMonth()+"-"+e.getDate();
-				}else{ es = "null" }
+				}else{ 
+					es = "null"
+				}
 				console.log(i+".\t"+
 					this.getValue(i, 0)+"\t|\t"+                     // taskID
 					this.getValue(i, 1)+"\t|\t"+                     // Task name
+					this.getValue(i, 2)+"\t|\t"+                     // Resource
 					ss+"\t|\t"+                                      // Start string
 					es+"\t|\t"+                                      // End string
-					( (this.getValue(i, 4) == null)? "null" : millisecondsToDays(this.getValue(i, 4)) )+"\t|\t"+ // Duration
+					( (this.getValue(i, 5) == null)? "null" : millisecondsToDays(this.getValue(i, 5)) )+"\t|\t"+ // Duration
 					this.getValue(i, 6)                             // Dependencies
 				);
 			}
@@ -183,11 +214,16 @@ var _htmlElementGantt;
 		shadowRoot.appendChild(script);
 	}
 
-		// Function to convert days into milliseconds, to be used in the Google Gantt Chart
+	// Function to convert days into milliseconds, to be used in the Google Gantt Chart
 	function daysToMilliseconds(days) {
 		return days * 24 * 60 * 60 * 1000;
 	}
-	
+
+	// Function to convert milliseconds into days, to be used in the printTasks() method
+	function millisecondsToDays(milliseconds) {
+		return milliseconds / 1000 / 60 / 60 / 24;
+	}
+
 	// Main class for the Gantt chart custom widget
 	class Gantt extends HTMLElement {
 
@@ -250,7 +286,13 @@ var _htmlElementGantt;
 			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
 			this.startDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
 			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
-			this.data.updateTask('1_Preparation', 'Start Date', new Date(this.startDate));
+			var startDate = new Date(this.startDate);
+			this.data.updateTask('1_Preparation', 'Start Date', startDate);
+			this.data.updateTask('1.1_Alcance','Start Date',startDate);
+			this.data.updateTask('1.2_Planificacion','Start Date',startDate);
+			this.data.updateTask('1.3_Accesos','Start Date',startDate);
+			this.data.updateTask('1.4_Kickoff','Start Date',startDate);
+			this.data.updateTask('1.5_Prep_Entornos','Start Date',startDate);
 			this.refresh();
 		}
 
@@ -269,9 +311,20 @@ var _htmlElementGantt;
 			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
 		}		
 
+		calculateNewDurationForAllStages(){
+
+		}
+		
+		/*
+		calculateNewStartDateForAllTasks(){
+		}
+		*/
+
 		// Update the gantt's user interface to show recent changes
 		refresh() {
 			if(nttDebug==1)console.log("=======> Debug NTT - refresh()");
+			this.calculateNewDurationForAllStages();
+			//this.calculateNewStartDateForAllTasks();//
 			this.chart.draw(this.data, this.options);
 		}
 
