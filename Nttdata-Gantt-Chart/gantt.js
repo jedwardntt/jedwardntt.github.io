@@ -30,10 +30,10 @@ var _htmlElementGantt;
 		data.addRows([
 		  ['1_Preparation', 'I. Preparación del proyecto', null, 					new Date("2023-07-22"), null, daysToMilliseconds(1),  100,  null], 
 		  ['1.1_Alcance', 'Validación alcance y equipos', 'Preparación', new Date("2023-07-22"), 			null, daysToMilliseconds(1), 25,'1_Preparation'],///'1_Preparation'
-		  ['1.2_Planificacion', 'Validación planificación proyecto', 'Preparación', new Date("2023-07-22"), null, daysToMilliseconds(1), 25,  '1_Preparation'],///'1_Preparation'
-		  ['1.3_Accesos', 'Accesos y permisos a sistemas', 'Preparación', new Date("2023-07-22"),           null, daysToMilliseconds(1), 20,  '1_Preparation'],///'1_Preparation'
-		  ['1.4_Kickoff', 'Reunión de lanzamiento - kickoff', 'Preparación', new Date("2023-07-22"),        null, daysToMilliseconds(1), 0,   '1_Preparation'],///'1_Preparation'
-		  ['1.5_Prep_Entornos', 'Preparación de entornos', 'Preparación', new Date("2023-07-22"),           null, daysToMilliseconds(1), 100, '1_Preparation'],///'1_Preparation'
+		  ['1.2_Planificacion', 'Validación planificación proyecto', 'Preparación', null, null, daysToMilliseconds(1), 25,  '1.1_Alcance'],///'1_Preparation'
+		  ['1.3_Accesos', 'Accesos y permisos a sistemas', 'Preparación', null,           null, daysToMilliseconds(1), 20,  '1.2_Planificacion'],///'1_Preparation'
+		  ['1.4_Kickoff', 'Reunión de lanzamiento - kickoff', 'Preparación', null,        null, daysToMilliseconds(1), 0,   '1.3_Accesos'],///'1_Preparation'
+		  ['1.5_Prep_Entornos', 'Preparación de entornos', 'Preparación', null,           null, daysToMilliseconds(1), 100, '1.4_Kickoff'],///'1_Preparation'
 
 		  ['2_Analysis', 'II. Análisis y Diseño', null, 							null, null, daysToMilliseconds(1),  100,  '1_Preparation'],
 		  /*
@@ -110,8 +110,9 @@ var _htmlElementGantt;
 			'fill': 'white',
 			'opacity': 0
 		 },
-		  width: '100%'
+		  width: '100%',
 		  //,height: '100%'
+		  height: 275
 		};
 
 		// var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
@@ -245,8 +246,7 @@ var _htmlElementGantt;
 			if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start load library");
 			loadScript("https://www.gstatic.com/charts/loader.js",_shadowRoot,function(){
 				// Cargar el paquete de gráficos de gantt
-				google.charts.load('current', {'packages':['gantt']});
-				// --> to check in the future the gantt translation -> google.charts.load('current', {'packages':['corechart'], 'language': 'ja'});
+				google.charts.load('current', {'packages':['gantt'], 'language': 'es'});
 				// Call to drawChart function 
 				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start grantt draw");
 				google.charts.setOnLoadCallback(function(){
@@ -282,21 +282,24 @@ var _htmlElementGantt;
 			}
 		}
 
-		setStartDate(startDate){ // Date formar: yyyymmdd
-			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
+		setStartDate(startDate){ // Date in integer format: yyyymmdd
+			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: ");
+			//if(nttDebug==1)console.log(startDate);
+			if(startDate===''){ // Set 1900-01-01 as default start date 
+				startDate = 19000101;
+			}
 			this.startDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
-			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
+			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
 			var startDate = new Date(this.startDate);
 			this.data.updateTask('1_Preparation', 'Start Date', startDate);
 			this.data.updateTask('1.1_Alcance','Start Date',startDate);
-			this.data.updateTask('1.2_Planificacion','Start Date',startDate);
-			this.data.updateTask('1.3_Accesos','Start Date',startDate);
-			this.data.updateTask('1.4_Kickoff','Start Date',startDate);
-			this.data.updateTask('1.5_Prep_Entornos','Start Date',startDate);
 			this.refresh();
 		}
 
 		setTaskProperty(taskId, propertyName, newValue){
+			if( propertyName == "Duration" && (newValue =="" || isNaN(newValue)) ){
+				newValue = 0;
+			}
 			if(nttDebug==1)console.log("=======> Debug NTT - setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
 			this.data.updateTask(taskId, propertyName, newValue);
 			this.refresh();
