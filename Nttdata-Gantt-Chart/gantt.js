@@ -28,11 +28,11 @@ var _htmlElementGantt;
 		data.addColumn('number', 'Percent Complete'); data.addColumn('string', 'Dependencies');
 
 		data.addRows([
-		  ['1_Preparation', 'I. Preparación del proyecto', null, 					new Date("2023-07-22"), null, daysToMilliseconds(1),  100,  null], 
-		  ['1.1_Alcance', 'Validación alcance y equipos', 'Preparación', new Date("2023-07-22"), 			null, daysToMilliseconds(1), 25,'1_Preparation'],///'1_Preparation'
-		  ['1.2_Planificacion', 'Validación planificación proyecto', 'Preparación', null, null, daysToMilliseconds(1), 25,  '1.1_Alcance'],///'1_Preparation'
-		  ['1.3_Accesos', 'Accesos y permisos a sistemas', 'Preparación', null,           null, daysToMilliseconds(1), 20,  '1.2_Planificacion'],///'1_Preparation'
-		  ['1.4_Kickoff', 'Reunión de lanzamiento - kickoff', 'Preparación', null,        null, daysToMilliseconds(1), 0,   '1.3_Accesos'],///'1_Preparation'
+		  ['1_Preparation', 'I. Preparación del proyecto', null, 					new Date("2023-07-22"), null, daysToMilliseconds(5),  100,  null], 
+		  ['1.1_Alcance', 'Validación alcance y equipos', 'Preparación', new Date("2023-07-22"), 			null, daysToMilliseconds(1), 100,'1_Preparation'],///'1_Preparation'
+		  ['1.2_Planificacion', 'Validación planificación proyecto', 'Preparación', null, null, daysToMilliseconds(1), 100,  '1.1_Alcance'],///'1_Preparation'
+		  ['1.3_Accesos', 'Accesos y permisos a sistemas', 'Preparación', null,           null, daysToMilliseconds(1), 100,  '1.2_Planificacion'],///'1_Preparation'
+		  ['1.4_Kickoff', 'Reunión de lanzamiento - kickoff', 'Preparación', null,        null, daysToMilliseconds(1), 100,   '1.3_Accesos'],///'1_Preparation'
 		  ['1.5_Prep_Entornos', 'Preparación de entornos', 'Preparación', null,           null, daysToMilliseconds(1), 100, '1.4_Kickoff'],///'1_Preparation'
 
 		  ['2_Analysis', 'II. Análisis y Diseño', null, 							null, null, daysToMilliseconds(1),  100,  '1_Preparation'],
@@ -123,6 +123,7 @@ var _htmlElementGantt;
 		const chartDivElement = htmlElementGantt.shadowRoot.getElementById("chart_div");
 		var   chart			  = new google.visualization.Gantt(chartDivElement); 
 		chart.draw(data, options);
+		//chart.data = data;
 
 		//=============================================================
 		// Save the google gant chart to Gantt class' attribute:
@@ -141,13 +142,37 @@ var _htmlElementGantt;
 		if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 1");
 
 		//=============================================================
+		//google.visualization.events.addListener(chart, 'select', selectHandler);
+/*
+		function selectHandler(e) {
+			if(nttDebug==1)console.log("=======> Debug NTT - Select event");
+			var selection = chart.getSelection();
+			if(nttDebug==1)console.log("============ SELECTION ===============");
+			if(nttDebug==1)console.log(selection.length);
+			if( selection.length > 0 ){
+				if(nttDebug==1)console.log(selection[0]);
+				if(nttDebug==1)console.log(selection[0].row);
+				if(nttDebug==1)console.log("============ DATA ===============");
+				if(nttDebug==1)console.log(data.getValue(selection[0].row,0)); // Column 0 means TaskId
+				if(nttDebug==1)console.log(data.getValue(selection[0].row,1)); // Column 1 means Task name
+				if(nttDebug==1)console.log(data.getValue(selection[0].row,5)); // Column 5 means Task duration
+				if(nttDebug==1)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
+				//var event = new Event("onClick");
+				//this.dispatchEvent(event);
+			}
+
+		}
+		*/
+
+
+		//=============================================================
 		// taskProperty values: 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'
-		data.updateTask = function (taskId, taskProperty, newValue){ 
+		data.getTaskProperty = function (taskId, taskProperty){ 
 			var taskRow = null;
 			for (var i = 0; i < this.getNumberOfRows(); i++) {
 				var iTaskId = this.getValue(i, 0); // Task ID
 				//console.log("i: "+i.toString+" | "+iTaskID);
-				console.log(iTaskId +" // "+ taskId);
+				//console.log(iTaskId +" // "+ taskId);
 				if(iTaskId === taskId){
 					//console.log("i de salida del for: "+i.toString());
 					taskRow = i;
@@ -157,8 +182,37 @@ var _htmlElementGantt;
 			var columnIndexes = [null,'Task Name','Resource', 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'];
 			var propertyIndex = columnIndexes.indexOf(taskProperty);
 			if( taskRow != null && propertyIndex > 0 ){
-				console.log("taskRow: "+taskRow.toString()+" | propertyIndex: "+propertyIndex.toString());
-				if( propertyIndex==5 && newValue != null ){ //  propertyIndex==4 means 'Duration' in days
+				//console.log("taskRow: "+taskRow.toString()+" | propertyIndex: "+propertyIndex.toString());
+				if( propertyIndex==5){ //  propertyIndex==5 means 'Duration' in days
+					var value = this.getValue(taskRow, propertyIndex); 
+					return millisecondsToDays(value);
+				}else{
+					return this.getValue(taskRow, propertyIndex); 
+				}
+			}else{
+				return undefined; // Get dagta error 
+			}
+		}
+
+		//=============================================================
+		// taskProperty values: 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'
+		data.updateTask = function (taskId, taskProperty, newValue){ 
+			var taskRow = null;
+			for (var i = 0; i < this.getNumberOfRows(); i++) {
+				var iTaskId = this.getValue(i, 0); // Task ID
+				//console.log("i: "+i.toString+" | "+iTaskID);
+				//console.log(iTaskId +" // "+ taskId);
+				if(iTaskId === taskId){
+					//console.log("i de salida del for: "+i.toString());
+					taskRow = i;
+					break;
+				}
+			}
+			var columnIndexes = [null,'Task Name','Resource', 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'];
+			var propertyIndex = columnIndexes.indexOf(taskProperty);
+			if( taskRow != null && propertyIndex > 0 ){
+				//console.log("taskRow: "+taskRow.toString()+" | propertyIndex: "+propertyIndex.toString());
+				if( propertyIndex==5 && newValue != null ){ //  propertyIndex==5 means 'Duration' in days
 					this.setValue(taskRow, propertyIndex, daysToMilliseconds(newValue)); 
 				}else{
 					this.setValue(taskRow, propertyIndex, newValue); 
@@ -282,6 +336,15 @@ var _htmlElementGantt;
 			}
 		}
 
+		onCustomWidgetResize(width, height){
+			/*
+			if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetResize(width, height) event");
+			if(nttDebug==1)console.log("width: "+width);
+			if(nttDebug==1)console.log("height "+height);
+			*/
+			this.refresh();
+        }
+
 		setStartDate(startDate){ // Date in integer format: yyyymmdd
 			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: ");
 			//if(nttDebug==1)console.log(startDate);
@@ -306,22 +369,41 @@ var _htmlElementGantt;
 		}
 		// _htmlElementGantt.setTaskProperty('1_Preparation','Duration',3);
 
-		getTaskProperty(taskId){
-			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
+		getTaskProperty(taskId, propertyName){
+			/*if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
 			var convertedDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
 			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Converted date: "+convertedDate);
 			this.startDate = convertedDate;
 			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
+			*/
+			return this.data.getTaskProperty(taskId, propertyName);
 		}		
 
 		calculateNewDurationForAllStages(){
 
 		}
 		
-		/*
-		calculateNewStartDateForAllTasks(){
+		getSelectedTaskId(){
+			var selection = this.chart.getSelection();
+			//if(nttDebug==1)console.log("============ SELECTION ===============");
+			//if(nttDebug==1)console.log(selection.length);
+			if( selection.length > 0 ){
+				/*
+				if(nttDebug==1)console.log(selection[0]);
+				if(nttDebug==1)console.log(selection[0].row);
+				if(nttDebug==1)console.log("============ DATA ===============");
+				if(nttDebug==1)console.log(this.data.getValue(selection[0].row,0)); // Column 0 means TaskId
+				if(nttDebug==1)console.log(this.data.getValue(selection[0].row,1)); // Column 1 means Task name
+				if(nttDebug==1)console.log(this.data.getValue(selection[0].row,5)); // Column 5 means Task duration
+				if(nttDebug==1)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
+				*/
+				//var event = new Event("onClick");
+				//this.dispatchEvent(event);
+				return this.data.getValue(selection[0].row,0); // Column 0 means TaskId
+			}else{
+				return undefined;
+			}
 		}
-		*/
 
 		// Update the gantt's user interface to show recent changes
 		refresh() {
@@ -343,6 +425,10 @@ var _htmlElementGantt;
 			//google.charts.setOnLoadCallback(drawChart);
 			if(nttDebug==1)console.log("=======> Debug NTT - clearChart -- v1"); 
 			*/
+		}
+
+		onClick(){
+			if(nttDebug==1)console.log("=======> Debug NTT - Click event onClick() at gantt.js"); 
 		}
 		
 	}

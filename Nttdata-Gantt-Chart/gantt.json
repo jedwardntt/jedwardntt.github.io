@@ -189,8 +189,17 @@
 					"name": "taskId",
 					"type": "string",
 					"description": "The id of the task to set the duration"
+				},
+				{
+					"name": "propertyName",
+					"type": "string",
+					"description": "The name of the property"
 				}
 			]
+		},
+		"getSelectedTaskId": {
+			"returnType": "string",
+			"description": "Returns the Id of the selected task."
 		},
 		"refresh": {
 			"description": "Update the UI to show changes on tasks."
