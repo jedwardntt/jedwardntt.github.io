@@ -211,7 +211,17 @@
 	"events": {
 		"onClick": {
 			"description": "Called when the user clicks the gantt."
+		},
+		"onDblClick": {
+			"description": "Called when the user double clicks the gantt."
+		},
+		"onContextMenu": {
+			"description": "Called when the user right clicks the gantt."
+		},
+		"onTaskSelected": {
+			"description": "Called when the user selects a task."
 		}
+		 
 	}
 	
 	

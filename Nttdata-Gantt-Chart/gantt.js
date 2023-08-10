@@ -95,14 +95,14 @@ var _htmlElementGantt;
 			percentEnabled: false,
 			palette: [
 				{
-					"color": "#354a5f",// default
-					"dark": "#eff4f9", // over
-					"light": "#e3e3e3" // others
+					"color": "#354a5f", // default // azul oscuro
+					"dark":  "#5496cd", // over    // azul claro
+					"light": "#e3e3e3"  // others  // gris claro
 				},
 				{
-					"color": "#71706e",// default
-					"dark": "#eff4f9", // over
-					"light": "#e3e3e3" // others
+					"color": "#71706e", // default
+					"dark":  "#5496cd", // over
+					"light": "#e3e3e3"  // others
 				}				
 			  ]
 		  },
@@ -139,7 +139,7 @@ var _htmlElementGantt;
 		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - options content:");
 		//if(nttDebug==1)console.log(htmlElementGantt.options);
 
-		if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 1");
+		//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 1");
 
 		//=============================================================
 		//google.visualization.events.addListener(chart, 'select', selectHandler);
@@ -160,10 +160,18 @@ var _htmlElementGantt;
 				//var event = new Event("onClick");
 				//this.dispatchEvent(event);
 			}
-
 		}
 		*/
 
+		//=============================================================
+		google.visualization.events.addListener(chart, 'select', selectHandler);
+		function selectHandler(e) {
+			//if(nttDebug==1)console.log("=======> Debug NTT - Select event - onTaskSelected - gantt.js");
+			var selection = chart.getSelection();
+			//if(nttDebug==1)console.log(selection);
+			var event = new Event("onTaskSelected");
+			htmlElementGantt.dispatchEvent(event);
+		}
 
 		//=============================================================
 		// taskProperty values: 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'
@@ -253,7 +261,7 @@ var _htmlElementGantt;
 			}
 		}
 
-		if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 2");
+		//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 2");
 	}
 
 	// ===================== Auxiliar functions =================================
@@ -289,6 +297,14 @@ var _htmlElementGantt;
 			_shadowRoot.appendChild(template.content.cloneNode(true));
 			this.addEventListener("click", event => {
 				var event = new Event("onClick");
+				this.dispatchEvent(event);
+			});
+			this.addEventListener("dblclick", event => {
+				var event = new Event("onDblClick");
+				this.dispatchEvent(event);
+			});
+			this.addEventListener("contextmenu", event => {
+				var event = new Event("onContextMenu");
 				this.dispatchEvent(event);
 			});
 			this._props = {};
@@ -352,7 +368,7 @@ var _htmlElementGantt;
 				startDate = 19000101;
 			}
 			this.startDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
-			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
+			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
 			var startDate = new Date(this.startDate);
 			this.data.updateTask('1_Preparation', 'Start Date', startDate);
 			this.data.updateTask('1.1_Alcance','Start Date',startDate);
@@ -363,7 +379,7 @@ var _htmlElementGantt;
 			if( propertyName == "Duration" && (newValue =="" || isNaN(newValue)) ){
 				newValue = 0;
 			}
-			if(nttDebug==1)console.log("=======> Debug NTT - setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
+			//if(nttDebug==1)console.log("=======> Debug NTT - setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
 			this.data.updateTask(taskId, propertyName, newValue);
 			this.refresh();
 		}
@@ -379,9 +395,8 @@ var _htmlElementGantt;
 			return this.data.getTaskProperty(taskId, propertyName);
 		}		
 
-		calculateNewDurationForAllStages(){
-
-		}
+		//calculateNewDurationForAllStages(){
+		//}
 		
 		getSelectedTaskId(){
 			var selection = this.chart.getSelection();
@@ -407,8 +422,8 @@ var _htmlElementGantt;
 
 		// Update the gantt's user interface to show recent changes
 		refresh() {
-			if(nttDebug==1)console.log("=======> Debug NTT - refresh()");
-			this.calculateNewDurationForAllStages();
+			//if(nttDebug==1)console.log("=======> Debug NTT - refresh()");
+			//this.calculateNewDurationForAllStages();
 			//this.calculateNewStartDateForAllTasks();//
 			this.chart.draw(this.data, this.options);
 		}
@@ -426,10 +441,11 @@ var _htmlElementGantt;
 			if(nttDebug==1)console.log("=======> Debug NTT - clearChart -- v1"); 
 			*/
 		}
-
+		/*
 		onClick(){
 			if(nttDebug==1)console.log("=======> Debug NTT - Click event onClick() at gantt.js"); 
 		}
+		*/
 		
 	}
 
