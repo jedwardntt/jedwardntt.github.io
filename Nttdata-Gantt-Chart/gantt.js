@@ -11,8 +11,9 @@ var _htmlElementGantt;
 	let _shadowRoot;
 
 	let template = document.createElement("template");
-	template.innerHTML = `<div id="project_title" style="font-size: 16px; line-height: 19px; color: rgb(88, 89, 91); fill: rgb(88, 89, 91); font-family: "72-Web";">Project title</div>`;
+	template.innerHTML = `<div id="project_title" style="font-size: 16px; line-height: 19px; color: rgb( 35 , 31 , 32 ); fill: rgb( 35 , 31 , 32 ); font-family: '72-Web'; margin:6px">Project title</div>`; // rgb(88, 89, 91)
 	template.innerHTML += `<div id="chart_div" style="width: 100%; "></div>`;
+	// pointer-events: none; -> esto evita el tool-tip pero también quita la interacción con el gantt, como el evento del clic del ratón
 	// height: 100%; overflow: auto;
 	
 	// Project stages based on:
@@ -111,8 +112,7 @@ var _htmlElementGantt;
 			'opacity': 0
 		 },
 		  width: '100%',
-		  //,height: '100%'
-		  height: 275
+		  height: 250
 		};
 
 		// var chart = new google.visualization.Gantt(document.getElementById('chart_div'));
@@ -313,12 +313,12 @@ var _htmlElementGantt;
 			   _htmlElementGantt = this; // save this class as a global var to debug and development propose
 			var htmlElementGantt = this; // create this temporary var to pass to drawChart() function as parameter
 			// Load JavaScript Google Chart library
-			if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start load library");
+			//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start load library");
 			loadScript("https://www.gstatic.com/charts/loader.js",_shadowRoot,function(){
 				// Cargar el paquete de gráficos de gantt
 				google.charts.load('current', {'packages':['gantt'], 'language': 'es'});
 				// Call to drawChart function 
-				if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start grantt draw");
+				//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start grantt draw");
 				google.charts.setOnLoadCallback(function(){
 					drawChart(htmlElementGantt);
 				});
@@ -326,12 +326,12 @@ var _htmlElementGantt;
 		}
 
 		onCustomWidgetBeforeUpdate(changedProperties) {
-			if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetBeforeUpdate");
+			//if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetBeforeUpdate");
 			this._props = { ...this._props, ...changedProperties };
 		}
 
 		onCustomWidgetAfterUpdate(changedProperties) {
-			if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetAfterUpdate");
+			//if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetAfterUpdate");
 			if ("projectName" in changedProperties) {
 				this.shadowRoot.getElementById("project_title").innerHTML = changedProperties["projectName"];
 			}			
@@ -418,6 +418,34 @@ var _htmlElementGantt;
 			}else{
 				return undefined;
 			}
+		}
+
+		collapseStage(stageId){
+			//if(nttDebug==1)console.log("============ collapseStage(stageId): "+stageId+" ===============");
+			if(this.dataClone === undefined){
+				this.dataClone = this.data.clone();
+			}
+			//var stageSubTasks = [];
+			var taskRow = null;
+			for (var i = 0; i < this.dataClone.getNumberOfRows(); i++) {
+				var iDependencies = this.dataClone.getValue(i, 7); // Dependencies
+				var subTaskId     = this.dataClone.getValue(i, 0); // 0 means TaskId
+				//console.log("i: "+i+" || "+this.dataClone.getValue(i, 0)+" - "+this.dataClone.getValue(i, 1)); // 1 means task name
+				//console.log(iTaskId +" // "+ taskId);
+				//console.log(subTaskId.includes("."));
+				if(iDependencies != null && iDependencies.includes(stageId) && subTaskId.includes(".")){ // If the selected task is part of the "stageId" and the task is not a stage (e.g. '1_Preparation', '2_Analysis', '3_Implementation', '4_Testing', '5_Close')
+					//console.log(">>>  Subtarea identificada y eliminada - TaskId: "+subTaskId);
+					this.dataClone.removeRow(i);
+					this.collapseStage(subTaskId);
+					i--; // Go back because one element was removed
+				}
+			}
+			this.chart.draw(this.dataClone, this.options);
+		}
+
+		expandAllStages(){
+			this.dataClone = undefined;
+			this.refresh();
 		}
 
 		// Update the gantt's user interface to show recent changes

@@ -44,7 +44,7 @@
 		},
 		"height": {
 			"type": "integer",
-			"default": 300
+			"default": 250
 		}		
 	},
 	"methods": {
@@ -99,67 +99,66 @@
 			"description": "Collapse all stages.",
 			"parameters": [
 				{
-					"name": "phaseId",
+					"name": "stageId",
 					"type": "string",
 					"description": "The id if the phase to collapse"
 				}
 			],
-			"body": "this.color = phaseId;"
+			"body": "this.color = stageId;"
 		},
 		"expandAllStages": {
 			"description": "Expand all stages.",
 			"parameters": [
 				{
-					"name": "phaseId",
+					"name": "stageId",
 					"type": "string",
 					"description": "The id if the phase to expand"
 				}
 			],
-			"body": "this.color = phaseId;"
+			"body": "this.color = stageId;"
 		},
 		"collapseStage": {
 			"description": "Collapse tasks for a stage.",
 			"parameters": [
 				{
-					"name": "phaseId",
+					"name": "stageId",
 					"type": "string",
-					"description": "The id if the phase to collapse"
+					"description": "The id if the stage to collapse"
 				}
-			],
-			"body": "this.color = phaseId;"
+			]
 		},
 		"expandStage": {
 			"description": "Expand tasks for a stage.",
 			"parameters": [
 				{
-					"name": "phaseId",
+					"name": "stageId",
 					"type": "string",
 					"description": "The id if the phase to expand"
 				}
 			],
-			"body": "this.color = phaseId;"
+			"body": "this.color = stageId;"
 		},
 		"hideStage": {
 			"description": "Collapse tasks for a stage.",
 			"parameters": [
 				{
-					"name": "phaseId",
+					"name": "stageId",
 					"type": "string",
 					"description": "The id if the phase to collapse"
 				}
 			],
-			"body": "this.color = phaseId;"
+			"body": "this.color = stageId;"
 		},
 		"showStage": {
 			"description": "Expand tasks for a stage.",
 			"parameters": [
 				{
-					"name": "phaseId",
+					"name": "stageId",
 					"type": "string",
 					"description": "The id if the phase to expand"
 				}
 			],
-			"body": "this.color = phaseId;"
+			"body": "this.color = stageId;"
 		},
 		"setTaskProperty": {
 			"description": "Sets the value for a task property.",
