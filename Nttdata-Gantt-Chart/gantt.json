@@ -27,6 +27,10 @@
 			"type": "string",
 			"description": "Start date",
 			"default": "2023-07-022"
+		},
+		"nttDebug": {
+			"type": "boolean",
+			"default": true
 		},		
 		"color": {
 			"type": "string",
@@ -107,15 +111,7 @@
 			"body": "this.color = stageId;"
 		},
 		"expandAllStages": {
-			"description": "Expand all stages.",
-			"parameters": [
-				{
-					"name": "stageId",
-					"type": "string",
-					"description": "The id if the phase to expand"
-				}
-			],
-			"body": "this.color = stageId;"
+			"description": "Expand all stages."
 		},
 		"collapseStage": {
 			"description": "Collapse tasks for a stage.",
@@ -135,8 +131,7 @@
 					"type": "string",
 					"description": "The id if the phase to expand"
 				}
-			],
-			"body": "this.color = stageId;"
+			]
 		},
 		"hideStage": {
 			"description": "Collapse tasks for a stage.",
@@ -200,6 +195,17 @@
 			"returnType": "string",
 			"description": "Returns the Id of the selected task."
 		},
+		"setDebugEnabled": {
+			"returnType": "boolean",
+			"description": "Sets if the debug messages by console log are enabled or disabled.",
+			"parameters": [
+				{
+					"name": "enabled",
+					"type": "boolean",
+					"description": "True o false"
+				}
+			]
+		},		
 		"refresh": {
 			"description": "Update the UI to show changes on tasks."
 		},

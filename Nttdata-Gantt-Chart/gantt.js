@@ -1,7 +1,7 @@
 //=============================================================
 // Start: SAP Analytics Cloud - Custom Windget - NTT Data Gantt
 
-const nttDebug = true;
+//const nttDebug = true;
 
 // Global variable for the Html Element Gantt (for development propose)
 var _htmlElementGantt;
@@ -128,35 +128,35 @@ var _htmlElementGantt;
 		//=============================================================
 		// Save the google gant chart to Gantt class' attribute:
 		htmlElementGantt.chart = chart;
-		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - chart content:");
-		//if(nttDebug==1)console.log(htmlElementGantt.chart);
+		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Gantt constructor - chart content:");
+		//if(this.nttDebug===true)console.log(htmlElementGantt.chart);
 
 		htmlElementGantt.data = data;
-		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - data content:");
-		//if(nttDebug==1)console.log(htmlElementGantt.data);
+		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Gantt constructor - data content:");
+		//if(this.nttDebug===true)console.log(htmlElementGantt.data);
 
 		htmlElementGantt.options = options;
-		//if(nttDebug==1)console.log("=======> Debug NTT - Gantt constructor - options content:");
-		//if(nttDebug==1)console.log(htmlElementGantt.options);
+		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Gantt constructor - options content:");
+		//if(this.nttDebug===true)console.log(htmlElementGantt.options);
 
-		//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 1");
+		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Google Chart - End grantt draw 1");
 
 		//=============================================================
 		//google.visualization.events.addListener(chart, 'select', selectHandler);
 /*
 		function selectHandler(e) {
-			if(nttDebug==1)console.log("=======> Debug NTT - Select event");
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Select event");
 			var selection = chart.getSelection();
-			if(nttDebug==1)console.log("============ SELECTION ===============");
-			if(nttDebug==1)console.log(selection.length);
+			if(this.nttDebug===true)console.log("============ SELECTION ===============");
+			if(this.nttDebug===true)console.log(selection.length);
 			if( selection.length > 0 ){
-				if(nttDebug==1)console.log(selection[0]);
-				if(nttDebug==1)console.log(selection[0].row);
-				if(nttDebug==1)console.log("============ DATA ===============");
-				if(nttDebug==1)console.log(data.getValue(selection[0].row,0)); // Column 0 means TaskId
-				if(nttDebug==1)console.log(data.getValue(selection[0].row,1)); // Column 1 means Task name
-				if(nttDebug==1)console.log(data.getValue(selection[0].row,5)); // Column 5 means Task duration
-				if(nttDebug==1)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
+				if(this.nttDebug===true)console.log(selection[0]);
+				if(this.nttDebug===true)console.log(selection[0].row);
+				if(this.nttDebug===true)console.log("============ DATA ===============");
+				if(this.nttDebug===true)console.log(data.getValue(selection[0].row,0)); // Column 0 means TaskId
+				if(this.nttDebug===true)console.log(data.getValue(selection[0].row,1)); // Column 1 means Task name
+				if(this.nttDebug===true)console.log(data.getValue(selection[0].row,5)); // Column 5 means Task duration
+				if(this.nttDebug===true)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
 				//var event = new Event("onClick");
 				//this.dispatchEvent(event);
 			}
@@ -166,9 +166,9 @@ var _htmlElementGantt;
 		//=============================================================
 		google.visualization.events.addListener(chart, 'select', selectHandler);
 		function selectHandler(e) {
-			//if(nttDebug==1)console.log("=======> Debug NTT - Select event - onTaskSelected - gantt.js");
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Select event - onTaskSelected - gantt.js");
 			var selection = chart.getSelection();
-			//if(nttDebug==1)console.log(selection);
+			//if(this.nttDebug===true)console.log(selection);
 			var event = new Event("onTaskSelected");
 			htmlElementGantt.dispatchEvent(event);
 		}
@@ -261,7 +261,7 @@ var _htmlElementGantt;
 			}
 		}
 
-		//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - End grantt draw 2");
+		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Google Chart - End grantt draw 2");
 	}
 
 	// ===================== Auxiliar functions =================================
@@ -273,7 +273,7 @@ var _htmlElementGantt;
 		script.src  = url;
 		script.addEventListener("load", callbackFunction);
 		script.nonce = document.getElementsByTagName("script")[0].nonce; // Importante para que no de error de: Content-Security-Policy
-		//if(nttDebug==1)console.log("=======> Debug NTT - Nonce value: "+document.getElementsByTagName("script")[0].nonce);
+		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Nonce value: "+document.getElementsByTagName("script")[0].nonce);
 		shadowRoot.appendChild(script);
 	}
 
@@ -291,7 +291,7 @@ var _htmlElementGantt;
 	class Gantt extends HTMLElement {
 
 		constructor() {
-			//if(nttDebug==1)console.log("=======> Debug NTT - Constructor");
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Constructor");
 			super(); 
 			let _shadowRoot = this.attachShadow({mode: "open"});
 			_shadowRoot.appendChild(template.content.cloneNode(true));
@@ -310,15 +310,18 @@ var _htmlElementGantt;
 			this._props = {};
 
 			//=============================================================
+			this.nttDebug       = true;
+			this.nttDebugPrefix = "NTT Data CW-Gantt> ";
+
 			   _htmlElementGantt = this; // save this class as a global var to debug and development propose
 			var htmlElementGantt = this; // create this temporary var to pass to drawChart() function as parameter
 			// Load JavaScript Google Chart library
-			//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start load library");
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Google Chart - Start load library");
 			loadScript("https://www.gstatic.com/charts/loader.js",_shadowRoot,function(){
 				// Cargar el paquete de gráficos de gantt
 				google.charts.load('current', {'packages':['gantt'], 'language': 'es'});
 				// Call to drawChart function 
-				//if(nttDebug==1)console.log("=======> Debug NTT - Google Chart - Start grantt draw");
+				//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Google Chart - Start grantt draw");
 				google.charts.setOnLoadCallback(function(){
 					drawChart(htmlElementGantt);
 				});
@@ -326,12 +329,12 @@ var _htmlElementGantt;
 		}
 
 		onCustomWidgetBeforeUpdate(changedProperties) {
-			//if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetBeforeUpdate");
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"onCustomWidgetBeforeUpdate");
 			this._props = { ...this._props, ...changedProperties };
 		}
 
 		onCustomWidgetAfterUpdate(changedProperties) {
-			//if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetAfterUpdate");
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"onCustomWidgetAfterUpdate");
 			if ("projectName" in changedProperties) {
 				this.shadowRoot.getElementById("project_title").innerHTML = changedProperties["projectName"];
 			}			
@@ -344,31 +347,31 @@ var _htmlElementGantt;
 
 			if ("width" in changedProperties) {
 				//this.style["opacity"] = changedProperties["opacity"];
-				if(nttDebug==1)console.log("=======> Debug NTT - Cambio en ancho de 'Custome widget': "+changedProperties["width"]);
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Cambio en ancho de 'Custome widget': "+changedProperties["width"]);
 			}
 			if ("height" in changedProperties) {
 				//this.style["opacity"] = changedProperties["opacity"];
-				if(nttDebug==1)console.log("=======> Debug NTT - Cambio en alto de 'Custome widget': "+changedProperties["height"]);
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Cambio en alto de 'Custome widget': "+changedProperties["height"]);
 			}
 		}
 
 		onCustomWidgetResize(width, height){
 			/*
-			if(nttDebug==1)console.log("=======> Debug NTT - onCustomWidgetResize(width, height) event");
-			if(nttDebug==1)console.log("width: "+width);
-			if(nttDebug==1)console.log("height "+height);
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"onCustomWidgetResize(width, height) event");
+			if(this.nttDebug===true)console.log("width: "+width);
+			if(this.nttDebug===true)console.log("height "+height);
 			*/
 			this.refresh();
         }
 
 		setStartDate(startDate){ // Date in integer format: yyyymmdd
-			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: ");
-			//if(nttDebug==1)console.log(startDate);
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Input date: ");
+			//if(this.nttDebug===true)console.log(startDate);
 			if(startDate===''){ // Set 1900-01-01 as default start date 
 				startDate = 19000101;
 			}
 			this.startDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
-			//if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Final date: "+this.startDate);
 			var startDate = new Date(this.startDate);
 			this.data.updateTask('1_Preparation', 'Start Date', startDate);
 			this.data.updateTask('1.1_Alcance','Start Date',startDate);
@@ -379,18 +382,18 @@ var _htmlElementGantt;
 			if( propertyName == "Duration" && (newValue =="" || isNaN(newValue)) ){
 				newValue = 0;
 			}
-			//if(nttDebug==1)console.log("=======> Debug NTT - setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
 			this.data.updateTask(taskId, propertyName, newValue);
 			this.refresh();
 		}
 		// _htmlElementGantt.setTaskProperty('1_Preparation','Duration',3);
 
 		getTaskProperty(taskId, propertyName){
-			/*if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Input date: "+startDate);
+			/*if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Input date: "+startDate);
 			var convertedDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
-			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Converted date: "+convertedDate);
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Converted date: "+convertedDate);
 			this.startDate = convertedDate;
-			if(nttDebug==1)console.log("=======> Debug NTT - setStartDate(startDate) - Final date: "+this.startDate);
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Final date: "+this.startDate);
 			*/
 			return this.data.getTaskProperty(taskId, propertyName);
 		}		
@@ -400,28 +403,36 @@ var _htmlElementGantt;
 		
 		getSelectedTaskId(){
 			var selection = this.chart.getSelection();
-			//if(nttDebug==1)console.log("============ SELECTION ===============");
-			//if(nttDebug==1)console.log(selection.length);
+			//if(this.nttDebug===true)console.log("============ SELECTION ===============");
+			//if(this.nttDebug===true)console.log(selection.length);
 			if( selection.length > 0 ){
 				/*
-				if(nttDebug==1)console.log(selection[0]);
-				if(nttDebug==1)console.log(selection[0].row);
-				if(nttDebug==1)console.log("============ DATA ===============");
-				if(nttDebug==1)console.log(this.data.getValue(selection[0].row,0)); // Column 0 means TaskId
-				if(nttDebug==1)console.log(this.data.getValue(selection[0].row,1)); // Column 1 means Task name
-				if(nttDebug==1)console.log(this.data.getValue(selection[0].row,5)); // Column 5 means Task duration
-				if(nttDebug==1)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
+				if(this.nttDebug===true)console.log(selection[0]);
+				if(this.nttDebug===true)console.log(selection[0].row);
+				if(this.nttDebug===true)console.log("============ DATA ===============");
+				if(this.nttDebug===true)console.log(this.data.getValue(selection[0].row,0)); // Column 0 means TaskId
+				if(this.nttDebug===true)console.log(this.data.getValue(selection[0].row,1)); // Column 1 means Task name
+				if(this.nttDebug===true)console.log(this.data.getValue(selection[0].row,5)); // Column 5 means Task duration
+				if(this.nttDebug===true)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
 				*/
 				//var event = new Event("onClick");
 				//this.dispatchEvent(event);
-				return this.data.getValue(selection[0].row,0); // Column 0 means TaskId
+				return this.getData().getValue(selection[0].row,0); // Column 0 means TaskId
 			}else{
 				return undefined;
 			}
 		}
 
+		getData(){
+			if(this.dataClone === undefined){
+				return this.data
+			}else{
+				return this.dataClone;
+			}			
+		}
+
 		collapseStage(stageId){
-			//if(nttDebug==1)console.log("============ collapseStage(stageId): "+stageId+" ===============");
+			//if(this.nttDebug===true)console.log("============ collapseStage(stageId): "+stageId+" ===============");
 			if(this.dataClone === undefined){
 				this.dataClone = this.data.clone();
 			}
@@ -443,21 +454,77 @@ var _htmlElementGantt;
 			this.chart.draw(this.dataClone, this.options);
 		}
 
+		expandStage(stageId){
+			//console.log(">>>>>>>>>>>> expandStage(stageId)");
+			//console.log(this.nttDebug);
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"expandStage(stageId): \""+stageId+"\"");
+			//var stageSubTasks = [];
+			var taskRow = null;
+			for (var rowIndex = 0; rowIndex < this.data.getNumberOfRows(); rowIndex++) {// Run over the original "data" Data table
+				var iDependencies = this.data.getValue(rowIndex, 7); // Dependencies
+				var subTaskId     = this.data.getValue(rowIndex, 0); // 0 means TaskId
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"rowIndex: "+rowIndex+" || "+this.data.getValue(rowIndex, 0)+" - "+this.data.getValue(rowIndex, 1)); // 1 means task name
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"subTaskId: "+subTaskId);
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"subTaskId.includes(\".\"): "+subTaskId.includes("."));
+				if(iDependencies != null && iDependencies.includes(stageId) && subTaskId.includes(".")){ // If the selected subtask is part of the "stageId" and the subtask is not a stage (e.g. '1_Preparation', '2_Analysis', '3_Implementation', '4_Testing', '5_Close')
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"¡¡¡SUBTASK IDENTIFIED TO BE ADDED!!! - subTaskId: "+subTaskId);
+					var newTask = [];
+					for( var columnIndex=0; columnIndex<8; columnIndex++ ){ // The Gantt data table has 8 columns (task properties)
+						var value = this.data.getValue(rowIndex, columnIndex);
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Task property "+columnIndex+": "+value);
+						newTask.push(value);						
+					}
+					//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"safeAddTaskToDataClone('"+newTask+"')");
+					this.safeAddTaskToDataClone(newTask, stageId);
+					this.expandStage(subTaskId);
+					//rowIndex--; // Go back because one element was removed
+				}
+			}
+			this.chart.draw(this.dataClone, this.options);
+		}
+ 		
+		// Add a row to the dataClone checkgin that the newTask is not in dataClone
+		safeAddTaskToDataClone(newTask, stageId){ // newTask: Array with a DataTable row // stageId: newTask's parent taskId
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"safeAddTaskToDataClone(newTask) newTask[0]: "+newTask[0]);
+			// Check if the newTask is already in "dataClone" (check by TaskId)
+			for (var rowIndex = 0; rowIndex < this.dataClone.getNumberOfRows(); rowIndex++) {
+				var value = this.dataClone.getValue(rowIndex, 0); // 0 means TaskId
+				if( value == newTask[0]){ // 0 means TaskId
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"safeAddTaskToDataClone(newTask) - Task '"+newTask[0]+"' is already in dataClone");
+					return; // The newTask is already in the dataClone
+				}
+			}
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"safeAddTaskToDataClone(newTask) - Task added");
+			var rowIndex = this.getTaskRowAtDataClone(stageId);
+			this.dataClone.insertRows(rowIndex, [newTask]);
+		}
+
+		getTaskRowAtDataClone(taskId){
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getTaskPositionOnDataClone(taskId) taskId: "+taskId);
+			for (var rowIndex = 0; rowIndex < this.dataClone.getNumberOfRows(); rowIndex++) {
+				var tmpTaskId = this.dataClone.getValue(rowIndex, 0); // 0 means TaskId
+				if( tmpTaskId == taskId){
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getTaskPositionOnDataClone(taskId) rowIndex: "+rowIndex);
+					return rowIndex;
+				}
+			}
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getTaskPositionOnDataClone(taskId) Task not found - taskId: "+taskId);
+		}
+
 		expandAllStages(){
 			this.dataClone = undefined;
 			this.refresh();
 		}
 
+
 		// Update the gantt's user interface to show recent changes
 		refresh() {
-			//if(nttDebug==1)console.log("=======> Debug NTT - refresh()");
-			//this.calculateNewDurationForAllStages();
-			//this.calculateNewStartDateForAllTasks();//
-			this.chart.draw(this.data, this.options);
+			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refresh()");
+			this.chart.draw(this.getData(), this.options);
 		}
 
-		reset() {
-			if(nttDebug==1)console.log("=======> Debug NTT - clearChart");
+		reset() { // Pending to implement
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"reset()");
 			/*
 			var data = new google.visualization.DataTable();
 			data.addColumn('string', 'Task ID'); 		  data.addColumn('string', 'Task Name');	data.addColumn('string', 'Resource');
@@ -466,14 +533,13 @@ var _htmlElementGantt;
 			//this.chart.removeRow(0);
 			
 			//google.charts.setOnLoadCallback(drawChart);
-			if(nttDebug==1)console.log("=======> Debug NTT - clearChart -- v1"); 
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"clearChart -- v1"); 
 			*/
 		}
-		/*
-		onClick(){
-			if(nttDebug==1)console.log("=======> Debug NTT - Click event onClick() at gantt.js"); 
+		
+		setDebugEnabled(enabled){
+			this.nttDebug = enabled;
 		}
-		*/
 		
 	}
 
