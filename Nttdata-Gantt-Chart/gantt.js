@@ -384,6 +384,8 @@ var _htmlElementGantt;
 			}
 			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
 			this.data.updateTask(taskId, propertyName, newValue);
+			if(this.dataClone !== undefined)
+				this.dataClone.updateTask(taskId, propertyName, newValue);
 			this.refresh();
 		}
 		// _htmlElementGantt.setTaskProperty('1_Preparation','Duration',3);
@@ -435,6 +437,9 @@ var _htmlElementGantt;
 			//if(this.nttDebug===true)console.log("============ collapseStage(stageId): "+stageId+" ===============");
 			if(this.dataClone === undefined){
 				this.dataClone = this.data.clone();
+				this.dataClone.getTaskProperty = this.data.getTaskProperty;
+				this.dataClone.updateTask      = this.data.updateTask;
+				this.dataClone.printTasks      = this.data.printTasks;
 			}
 			//var stageSubTasks = [];
 			var taskRow = null;

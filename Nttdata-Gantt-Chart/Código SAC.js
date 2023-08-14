@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////// INITIALIZATION
 
-// Obtener el listado de proyectos para poblar el selector (Dropdown_Proyectos)
+// Get the project list for populate the select  (Dropdown_Proyectos)
 Gantt.setVisible(false);
 Gantt.setProjectName("");
 var projects = PlanningModel_Estimator.getMembers(DimProy,{limit: 1000}); 
@@ -27,13 +27,13 @@ var varDataCellValue = "";
 if(varDataCell !== undefined){
 	varDataCellValue = varDataCell.rawValue;
 }
+
 return varDataCellValue;
 
 
 
 
-//////////////////////////////////////////////////////// BOTON SELECICONAR PROYECTO
-console.log("=======================================================================");
+//////////////////////////////////////////////////////// DropdownProyectosGantt - onSelect
 //console.log("=======================================================================");
 //Application.showBusyIndicator("Actualizando el Gantt...");
 
@@ -54,24 +54,7 @@ var prepEntornos  = Project.properties["PrepEntornos"];
 var UAT           = Project.properties["UAT"]; 
 var Despliegue    = Project.properties["Despliegue"]; 
 var Soporte       = Project.properties["Soporte"]; 
-*
-
-/*
-if( fechaInicio === "" ){
-	fechaInicio = "20230101";
-	console.log("Conversión de fecha inicio");
-}{
-	console.log("Sin conversión de fecha inicio");
-}
 */
-/*
-console.log("=======> Debug NTT - Dropdown_Proyectos - Fecha inicio: "+fechaInicio);
-console.log("=======> Debug NTT - Dropdown_Proyectos - UAT: "+UAT);
-console.log("=======> Debug NTT - Dropdown_Proyectos - Despliegue: "+Despliegue);
-console.log("=======> Debug NTT - Dropdown_Proyectos - Soporte: "+Soporte);
-*/
-// Análisis, por defecto 5 jornadas? o un porcentaje del resto
-
 Gantt.setStartDate(fechaInicio);
 //Application.Error("TEST ERROR");
 
@@ -88,7 +71,6 @@ Gantt.setTaskProperty('1.5_Prep_Entornos','Duration',prepEntornos);
 var tiempoAnalisisTotalDiasValue  = ScriptObject_Funciones.getMesureDimensionValue("TiempoAnalisisTotalDias");
 var tiempoDocumentaTotalDiasValue = ScriptObject_Funciones.getMesureDimensionValue("TiempoDocumentaTotalDias");
 
-//console.log(Number.parseFloat(tiempoAnalisisTotalDiasValue)+Number.parseFloat(tiempoDocumentaTotalDiasValue));
 Gantt.setTaskProperty('2_Analysis','Duration',ConvertUtils.numberToString(Number.parseFloat(tiempoAnalisisTotalDiasValue)+Number.parseFloat(tiempoDocumentaTotalDiasValue)));
 
 var tiempoConstruccionTotalDiasValue = ScriptObject_Funciones.getMesureDimensionValue("TiempoConstruccionTotalDias");
@@ -99,73 +81,76 @@ Gantt.setTaskProperty('4_Testing','Duration',tiempoUATotalDiasValue);
 
 var tiempoDesliegueTotalDiasValue = ScriptObject_Funciones.getMesureDimensionValue("TiempoDesliegueTotalDias");
 var tiempoSoporteTotalDiasValue   = ScriptObject_Funciones.getMesureDimensionValue("TiempoSoporteTotalDias");
-
-//console.log("======= CIERRE ============");
-//console.log(tiempoDesliegueTotalDiasValue);
-//console.log(tiempoSoporteTotalDiasValue);
-
+ 
 Gantt.setTaskProperty('5_Close','Duration',ConvertUtils.numberToString(Number.parseFloat(tiempoDesliegueTotalDiasValue)+Number.parseFloat(tiempoSoporteTotalDiasValue)));
 
 DropdownProyectosGantt.removeItem("--");
-
-//console.log("===============================   getSelections()   ========================================");
-//console.log(TableGantt.getSelections());
-
-//Application.hideBusyIndicator();
-
-//console.log("=======> Debug NTT - Dropdown_Proyectos - Start");
+ 
 
 
 
 
 //////////////////////////////////////////////////////// Gantt - onSelected (task)
-console.log("======== onTaskSelected - onClick() Gantt - SAC");
+if(NttDebug===true){console.log(NttDebugPrefix+" onTaskSelected - onClick() Gantt - SAC");}
 SelectedTaskId = Gantt.getSelectedTaskId();
-console.log("======== onTaskSelected - onClick() Gantt - SAC - SelectedTaskId: "+SelectedTaskId);
-if(SelectedTaskId !== undefined){
-	console.log("======== onTaskSelected - onClick() Gantt - SAC - Inicio");
+if(NttDebug===true){console.log(NttDebugPrefix+" onTaskSelected - onClick() Gantt - SAC - SelectedTaskId: "+SelectedTaskId);}
+if(SelectedTaskId !== undefined){ // If one task has been selected, then open the popup window to view/edit the task
+	
+	// Load the data to to populate the fields of the form in the popup window (view/edit task)
+	
+	if(NttDebug===true){console.log(NttDebugPrefix+" onTaskSelected - onClick() Gantt - SAC - Inicio");}
 	var duration = Gantt.getTaskProperty(SelectedTaskId,"Duration");
 	var taskName = Gantt.getTaskProperty(SelectedTaskId,"Task Name");
 	InputField_Gantt_Duracion.setValue(duration);
 	Text_Gantt_Nombre_tarea.applyText(taskName);
-	var taskCollapsedIndex = CollapsedStages.indexOf(SelectedTaskId); // Check is selected task is in "CollapsedStages" array
+	var taskCollapsedIndex = CollapsedStages.indexOf(SelectedTaskId); // Check if selected task is in "CollapsedStages" array
 	if( taskCollapsedIndex > -1 ){ // If the stage is collapsed 
 		CheckboxGroup_OcultarTarea_Gantt.setSelectedKeys(["ocultar"]); // Check the checkbox
 	}else{
 		CheckboxGroup_OcultarTarea_Gantt.setSelectedKeys([]);// Unckeck the checkbox
 	}
+	IsCollapseCheckboxClicked = false;
 	Popup_ViewEdit_TareaGantt.open();
-	console.log("======== onTaskSelected - onClick() Gantt - SAC - Fin");
+	if(NttDebug===true){console.log(NttDebugPrefix+" onTaskSelected - onClick() Gantt - SAC - Fin");}
 }
 
 
 
+//////////////////////////////////////////////////////// Popup_ViewEdit_TareaGantt - onclick
 
-
-//////// Popup_ModifTareaGantt - onclick
-
-if(NttDebug===true){console.log("======= PopupEditTask - Inicio");}
+if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - Inicio");}
 if (buttonId==="button1"){
-	if(NttDebug===true){console.log("======= PopupEditTask - OnClick - Inicio");}
+	
+	// Read the data from the from to call the Gantt's methods
+	
+	if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - Inicio");}
 	Gantt.setTaskProperty(SelectedTaskId,"Duration",InputField_Gantt_Duracion.getValue());
 	var selectedKeys = CheckboxGroup_OcultarTarea_Gantt.getSelectedKeys();
-	if(NttDebug===true){console.log("======= PopupEditTask - OnClick - Selected task: "+SelectedTaskId);}
-	if(selectedKeys.length>0){ // This selected task has been checked to be collapsed
-		if(NttDebug===true){console.log("======= PopupEditTask - OnClick - Collapse task: "+SelectedTaskId);}
-		Gantt.collapseStage(SelectedTaskId);
-		CollapsedStages.push(SelectedTaskId);
-	}else{ // This selected task has been unchecked to be elapsed
-		if(NttDebug===true){console.log("======= PopupEditTask - OnClick - Elapse task: "+SelectedTaskId);}
-		var stageIndex = CollapsedStages.indexOf(SelectedTaskId);
-		CollapsedStages.splice(stageIndex,1); // Remove stage from collapsed-stages list
-		Gantt.expandStage(SelectedTaskId);
+	if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - Selected task: \""+SelectedTaskId+"\"");}
+	
+	if(IsCollapseCheckboxClicked){
+		if(selectedKeys.length>0){ // This selected task has been checked to be collapsed
+			if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - Gantt.collapseStage: \""+SelectedTaskId+"\"");}
+			Gantt.collapseStage(SelectedTaskId);
+			if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - CollapsedStages.push: \""+SelectedTaskId+"\"");}
+			CollapsedStages.push(SelectedTaskId);
+		}else{ // This selected task has been unchecked to be elapsed
+			var stageIndex = CollapsedStages.indexOf(SelectedTaskId);
+			if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - stageIndex: "+ConvertUtils.numberToString(stageIndex));}
+			CollapsedStages.splice(stageIndex,1); // Remove stage from collapsed-stages list
+			if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - Gantt.expandStage: \""+SelectedTaskId+"\"");}
+			Gantt.expandStage(SelectedTaskId);
+		}
+	}else{
+		if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - OnClick - Collapse checkbox hasn't been clicked");}
 	}
+	
 	if(NttDebug===true){
-		console.log("======= PopupEditTask - OnClick - Selected stages:");
+		console.log(NttDebugPrefix+" PopupEditTask - OnClick - Selected stages ("+ConvertUtils.numberToString(CollapsedStages.length)+"):");
 		for(var i=0;i<CollapsedStages.length;i++){
 			if(NttDebug===true){console.log("- "+CollapsedStages[i]);}
 		}
-		console.log("======= PopupEditTask - OnClick - Fin");
+		console.log(NttDebugPrefix+" PopupEditTask - OnClick - Fin");
 	}
 }
 Gantt.refresh();
@@ -174,4 +159,4 @@ Button_Gantt_Edit_Locked.setVisible(true);
 Button_Gantt_Edit_Unloked.setVisible(false);
 CheckboxGroup_OcultarTarea_Gantt.setVisible(false);
 Popup_ViewEdit_TareaGantt.close();
-console.log("======= PopupEditTask - Fin");
+if(NttDebug===true){console.log(NttDebugPrefix+" PopupEditTask - Fin");}
