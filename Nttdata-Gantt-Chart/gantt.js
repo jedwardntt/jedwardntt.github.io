@@ -356,11 +356,6 @@ var _htmlElementGantt;
 		}
 
 		onCustomWidgetResize(width, height){
-			/*
-			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"onCustomWidgetResize(width, height) event");
-			if(this.nttDebug===true)console.log("width: "+width);
-			if(this.nttDebug===true)console.log("height "+height);
-			*/
 			this.refresh();
         }
 
@@ -382,13 +377,61 @@ var _htmlElementGantt;
 			if( propertyName == "Duration" && (newValue =="" || isNaN(newValue)) ){
 				newValue = 0;
 			}
-			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
 			this.data.updateTask(taskId, propertyName, newValue);
-			if(this.dataClone !== undefined)
+
+			// Update dataClone task
+			if(this.dataClone !== undefined){
+				//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"DATA CLONE updateTask");
 				this.dataClone.updateTask(taskId, propertyName, newValue);
+			}/*else{
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"NO  DATA CLONE updateTask");
+			}*/
+
+			if( propertyName == "Duration" ){
+				var dependencies = this.getTaskProperty(taskId, "Dependencies");
+				if(dependencies !== null){ // If this is not the fist stage ('1_Preparation')
+					var childrenDurationSum = this.getChildrenDurationSum(taskId);
+					var totalDuration = childrenDurationSum+Numbner(newValue);
+					this.refreshDurations(dependencies, totalDuration.toString());
+				}
+			}
+
 			this.refresh();
 		}
-		// _htmlElementGantt.setTaskProperty('1_Preparation','Duration',3);
+
+		getChildrenDurationSum(taskId){
+			for (var rowIndex = 0; rowIndex < this.data.getNumberOfRows(); rowIndex++) {// Run over the original "data" Data table
+				var rowDependencies = this.data.getValue(rowIndex, 7); // Dependencies
+				if(taskId != null && rowDependencies.includes(taskId)){
+					var rowTaskId       = this.data.getValue(rowIndex, 1); // TaskId
+					var rowDuration     = this.data.getValue(rowIndex, 5); // Duration
+					return Number(rowDuration) + Number(getChildrenDurationSum(rowTaskId));
+				}
+			}
+			return 0;
+		}
+
+		// Refresh duration for all dependencies
+		refreshDurations(dependencies,totalChildDuration){
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration)");
+			const dependenciesArray = dependencies.split(",", 3);
+			dependenciesArray.forEach(taskId => {
+				var elementDependencies = this.getTaskProperty(taskId, "Dependencies");
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration) - Element: "+taskId);
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration) - Element-Duration: "+totalChildDuration);				
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration) - Element-Dependencies: "+elementDependencies);
+				if(!taskId.includes(".")){ // If this taskId is a stage (tasks group) then update the duration
+					this.setTaskProperty(taskId, "Duration", totalChildDuration);
+				}else{ // Else, this is not a stage, then increment duration-sum and call recursively
+					var durationSum = Number(totalChildDuration) + Number(this.getTaskProperty(taskId, "Duration"));
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"totalChildDuration: "+totalChildDuration);
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"this.getTaskProperty(taskId, \"Duration\"): "+this.getTaskProperty(taskId, "Duration"));
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"durationSum: "+durationSum.toString());
+					this.refreshDurations(elementDependencies,durationSum.toString());
+				}
+			});
+		}
 
 		getTaskProperty(taskId, propertyName){
 			/*if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Input date: "+startDate);
@@ -520,7 +563,6 @@ var _htmlElementGantt;
 			this.dataClone = undefined;
 			this.refresh();
 		}
-
 
 		// Update the gantt's user interface to show recent changes
 		refresh() {

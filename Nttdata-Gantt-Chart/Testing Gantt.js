@@ -1,3 +1,26 @@
+'1_Preparation'
+'1.3_Accesos'
+
+_htmlElementGantt.getTaskProperty("1.3_Accesos","Duration");
+
+_htmlElementGantt.getTaskProperty("1.3_Accesos","Dependencies");
+_htmlElementGantt.getTaskProperty('1.2_Planificacion',"Dependencies");
+_htmlElementGantt.getTaskProperty('1.1_Alcance',"Dependencies");
+_htmlElementGantt.getTaskProperty('1_Preparation',"Dependencies"); -> null
+
+
+_htmlElementGantt.refreshDuration = function (dependencies){
+			const dependenciesArray = dependencies.split(",", 3);
+			dependenciesArray.forEach(element => {
+				console.log("element: "+element);
+			});
+		}
+
+_htmlElementGantt.refreshDuration("1.2_Planificacion")
+
+
+//============================================================================================
+
 _htmlElementGantt.safeAddTaskToDataClone('1_Preparation');
 CollapsedStages -> array con las etapas contraidas
 CheckboxGroup_OcultarTarea_Gantt.setSelectedKeys(["ocultar"]);
