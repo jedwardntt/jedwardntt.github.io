@@ -96,9 +96,9 @@ var _htmlElementGantt;
 			percentEnabled: false,
 			palette: [
 				{
-					"color": "#354a5f", // default // azul oscuro
-					"dark":  "#5496cd", // over    // azul claro
-					"light": "#e3e3e3"  // others  // gris claro
+					"color": "#354a5f", // default // Dark Blue 
+					"dark":  "#5496cd", // over    // Light Blue
+					"light": "#e3e3e3"  // others  // Light gray
 				},
 				{
 					"color": "#71706e", // default
@@ -123,45 +123,12 @@ var _htmlElementGantt;
 		const chartDivElement = htmlElementGantt.shadowRoot.getElementById("chart_div");
 		var   chart			  = new google.visualization.Gantt(chartDivElement); 
 		chart.draw(data, options);
-		//chart.data = data;
 
 		//=============================================================
 		// Save the google gant chart to Gantt class' attribute:
 		htmlElementGantt.chart = chart;
-		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Gantt constructor - chart content:");
-		//if(this.nttDebug===true)console.log(htmlElementGantt.chart);
-
 		htmlElementGantt.data = data;
-		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Gantt constructor - data content:");
-		//if(this.nttDebug===true)console.log(htmlElementGantt.data);
-
 		htmlElementGantt.options = options;
-		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Gantt constructor - options content:");
-		//if(this.nttDebug===true)console.log(htmlElementGantt.options);
-
-		//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Google Chart - End grantt draw 1");
-
-		//=============================================================
-		//google.visualization.events.addListener(chart, 'select', selectHandler);
-/*
-		function selectHandler(e) {
-			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"Select event");
-			var selection = chart.getSelection();
-			if(this.nttDebug===true)console.log("============ SELECTION ===============");
-			if(this.nttDebug===true)console.log(selection.length);
-			if( selection.length > 0 ){
-				if(this.nttDebug===true)console.log(selection[0]);
-				if(this.nttDebug===true)console.log(selection[0].row);
-				if(this.nttDebug===true)console.log("============ DATA ===============");
-				if(this.nttDebug===true)console.log(data.getValue(selection[0].row,0)); // Column 0 means TaskId
-				if(this.nttDebug===true)console.log(data.getValue(selection[0].row,1)); // Column 1 means Task name
-				if(this.nttDebug===true)console.log(data.getValue(selection[0].row,5)); // Column 5 means Task duration
-				if(this.nttDebug===true)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
-				//var event = new Event("onClick");
-				//this.dispatchEvent(event);
-			}
-		}
-		*/
 
 		//=============================================================
 		google.visualization.events.addListener(chart, 'select', selectHandler);
@@ -204,7 +171,7 @@ var _htmlElementGantt;
 
 		//=============================================================
 		// taskProperty values: 'Start Date', 'End Date', 'Duration', 'Percent Complete', 'Dependencies'
-		data.updateTask = function (taskId, taskProperty, newValue){ 
+		data.setTaskProperty = function (taskId, taskProperty, newValue){ 
 			var taskRow = null;
 			for (var i = 0; i < this.getNumberOfRows(); i++) {
 				var iTaskId = this.getValue(i, 0); // Task ID
@@ -311,7 +278,7 @@ var _htmlElementGantt;
 
 			//=============================================================
 			this.nttDebug       = true;
-			this.nttDebugPrefix = "NTT Data CW-Gantt> ";
+			this.nttDebugPrefix = "NTT Data Gantt-SCW> ";
 
 			   _htmlElementGantt = this; // save this class as a global var to debug and development propose
 			var htmlElementGantt = this; // create this temporary var to pass to drawChart() function as parameter
@@ -368,100 +335,88 @@ var _htmlElementGantt;
 			this.startDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
 			//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Final date: "+this.startDate);
 			var startDate = new Date(this.startDate);
-			this.data.updateTask('1_Preparation', 'Start Date', startDate);
-			this.data.updateTask('1.1_Alcance','Start Date',startDate);
+			this.data.setTaskProperty('1_Preparation', 'Start Date', startDate);
+			this.data.setTaskProperty('1.1_Alcance','Start Date',startDate);
 			this.refresh();
 		}
 
 		setTaskProperty(taskId, propertyName, newValue){
-			if( propertyName == "Duration" && (newValue =="" || isNaN(newValue)) ){
+			if(propertyName == "Duration" && (newValue =="" || isNaN(newValue))){
 				newValue = 0;
 			}
 			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
-			this.data.updateTask(taskId, propertyName, newValue);
+			this.data.setTaskProperty(taskId, propertyName, newValue);
 
 			// Update dataClone task
 			if(this.dataClone !== undefined){
-				//if(this.nttDebug===true)console.log(this.nttDebugPrefix+"DATA CLONE updateTask");
-				this.dataClone.updateTask(taskId, propertyName, newValue);
-			}/*else{
-				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"NO  DATA CLONE updateTask");
-			}*/
-
-			if( propertyName == "Duration" ){
+				this.dataClone.setTaskProperty(taskId, propertyName, newValue);
+			}
+			if(propertyName == "Duration"){
 				var dependencies = this.getTaskProperty(taskId, "Dependencies");
 				if(dependencies !== null){ // If this is not the fist stage ('1_Preparation')
-					var childrenDurationSum = this.getChildrenDurationSum(taskId);
-					var totalDuration = childrenDurationSum+Numbner(newValue);
-					this.refreshDurations(dependencies, totalDuration.toString());
+					if(taskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
+						var totalDuration = this.getChildrenDurationSum(taskId) + Number(newValue);
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - totalDuration: "+totalDuration);
+						this.refreshParentDuration(dependencies, totalDuration);
+					}else{
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - UPDATE SUB-TASKS DURATION - PENDING TO IMPLEMENT !!!!!!!!!!!!!!!!!!!!!!");
+					}
+				}else{
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - No dependencies found");
 				}
 			}
-
 			this.refresh();
 		}
 
 		getChildrenDurationSum(taskId){
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - taskId: "+taskId);
 			for (var rowIndex = 0; rowIndex < this.data.getNumberOfRows(); rowIndex++) {// Run over the original "data" Data table
+				var rowTaskId       = this.data.getValue(rowIndex, 0); // TaskId
 				var rowDependencies = this.data.getValue(rowIndex, 7); // Dependencies
-				if(taskId != null && rowDependencies.includes(taskId)){
-					var rowTaskId       = this.data.getValue(rowIndex, 1); // TaskId
-					var rowDuration     = this.data.getValue(rowIndex, 5); // Duration
-					return Number(rowDuration) + Number(getChildrenDurationSum(rowTaskId));
+				if(rowTaskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
+					if(rowDependencies != null && rowDependencies.includes(taskId)){
+						var rowDuration     = this.getTaskProperty(rowTaskId,"Duration"); // Duration
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - rowDependencies found: "+rowDependencies+" (In: "+rowTaskId+" / Duration: "+rowDuration+")");
+						return rowDuration + this.getChildrenDurationSum(rowTaskId);
+					}
+					const duration = this.getTaskProperty(taskId,"Duration");
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - Stop recursive call - duration for \""+taskId+"\": "+duration);
+					return duration;					
+				}else{
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - taskId is a stage (tasks group) return 0: "+taskId);
+					return 0
 				}
 			}
-			return 0;
 		}
 
-		// Refresh duration for all dependencies
-		refreshDurations(dependencies,totalChildDuration){
-			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration)");
-			const dependenciesArray = dependencies.split(",", 3);
-			dependenciesArray.forEach(taskId => {
-				var elementDependencies = this.getTaskProperty(taskId, "Dependencies");
-				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration) - Element: "+taskId);
-				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration) - Element-Duration: "+totalChildDuration);				
-				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshDurations(dependencies,totalChildDuration) - Element-Dependencies: "+elementDependencies);
+		// Refresh duration for all parent (parent stage or tasks group)
+		refreshParentDuration(parent,childDurationSum){
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum): "+parent+" / "+childDurationSum);
+			const parentArray = parent.split(",", 3);
+			parentArray.forEach(taskId => {
+				var elementParent = this.getTaskProperty(taskId, "Dependencies");
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum) - Element:          "+taskId);
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum) - Element-Duration: "+childDurationSum);				
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum) - Element-parent:   "+elementParent);
 				if(!taskId.includes(".")){ // If this taskId is a stage (tasks group) then update the duration
-					this.setTaskProperty(taskId, "Duration", totalChildDuration);
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum) - Updating task duration - taskId: "+taskId+" / Duration: "+childDurationSum);
+					this.setTaskProperty(taskId, "Duration", childDurationSum);
 				}else{ // Else, this is not a stage, then increment duration-sum and call recursively
-					var durationSum = Number(totalChildDuration) + Number(this.getTaskProperty(taskId, "Duration"));
-					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"totalChildDuration: "+totalChildDuration);
-					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"this.getTaskProperty(taskId, \"Duration\"): "+this.getTaskProperty(taskId, "Duration"));
-					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"durationSum: "+durationSum.toString());
-					this.refreshDurations(elementDependencies,durationSum.toString());
+					var durationSum = childDurationSum + this.getTaskProperty(taskId, "Duration");
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum) - child duration sum:      "+childDurationSum);
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshParentDuration(parent,childDurationSum) - current task duration: "+this.getTaskProperty(taskId, "Duration"));
+					this.refreshParentDuration(elementParent,durationSum);
 				}
 			});
 		}
 
 		getTaskProperty(taskId, propertyName){
-			/*if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Input date: "+startDate);
-			var convertedDate = startDate.toString().substr(0,4)+"-"+startDate.toString().substr(4,2)+"-"+startDate.toString().substr(6,2);
-			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Converted date: "+convertedDate);
-			this.startDate = convertedDate;
-			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setStartDate(startDate) - Final date: "+this.startDate);
-			*/
 			return this.data.getTaskProperty(taskId, propertyName);
 		}		
-
-		//calculateNewDurationForAllStages(){
-		//}
 		
 		getSelectedTaskId(){
 			var selection = this.chart.getSelection();
-			//if(this.nttDebug===true)console.log("============ SELECTION ===============");
-			//if(this.nttDebug===true)console.log(selection.length);
 			if( selection.length > 0 ){
-				/*
-				if(this.nttDebug===true)console.log(selection[0]);
-				if(this.nttDebug===true)console.log(selection[0].row);
-				if(this.nttDebug===true)console.log("============ DATA ===============");
-				if(this.nttDebug===true)console.log(this.data.getValue(selection[0].row,0)); // Column 0 means TaskId
-				if(this.nttDebug===true)console.log(this.data.getValue(selection[0].row,1)); // Column 1 means Task name
-				if(this.nttDebug===true)console.log(this.data.getValue(selection[0].row,5)); // Column 5 means Task duration
-				if(this.nttDebug===true)console.log(millisecondsToDays(data.getValue(selection[0].row,5))); // Duration in days
-				*/
-				//var event = new Event("onClick");
-				//this.dispatchEvent(event);
 				return this.getData().getValue(selection[0].row,0); // Column 0 means TaskId
 			}else{
 				return undefined;
@@ -481,7 +436,7 @@ var _htmlElementGantt;
 			if(this.dataClone === undefined){
 				this.dataClone = this.data.clone();
 				this.dataClone.getTaskProperty = this.data.getTaskProperty;
-				this.dataClone.updateTask      = this.data.updateTask;
+				this.dataClone.setTaskProperty = this.data.setTaskProperty;
 				this.dataClone.printTasks      = this.data.printTasks;
 			}
 			//var stageSubTasks = [];
