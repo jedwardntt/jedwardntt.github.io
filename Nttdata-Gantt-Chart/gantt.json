@@ -182,12 +182,23 @@
 				{
 					"name": "taskId",
 					"type": "string",
-					"description": "The id of the task to set the duration"
+					"description": "The id of the task to set the property"
 				},
 				{
 					"name": "propertyName",
 					"type": "string",
 					"description": "The name of the property"
+				}
+			]
+		},
+		"getTaskDuration": {
+			"returnType": "number",
+			"description": "Returns the task duration.",
+			"parameters": [
+				{
+					"name": "taskId",
+					"type": "string",
+					"description": "The id of the task to set the duration"
 				}
 			]
 		},

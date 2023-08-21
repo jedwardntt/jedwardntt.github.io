@@ -1,3 +1,52 @@
+//============================================================================================
+
+var container =  _htmlElementGantt.shadowRoot.getElementById("chart_div");
+
+var tasks = container.getElementsByTagName("text");
+
+function setCssTaskAttribute(taskName, attribute, value){
+	for(var i=0; i<tasks.length; i++){
+		var task = tasks[i];
+		var iTaskName = task.innerHTML;
+		if(iTaskName == taskName){
+			$(task).attr(attribute, value);
+			console.log("taskName cambio atributo: "+iTaskName);
+		}
+		console.log("taskName: "+iTaskName);
+	}
+}
+
+setCssTaskAttribute("I. Preparación del proyecto", "font-weight", "bold");
+setCssTaskAttribute("II. Análisis y Diseño", "font-weight", "bold");
+setCssTaskAttribute("III. Implantación", "font-weight", "bold");
+setCssTaskAttribute("IV. Plan de Pruebas", "font-weight", "bold");
+setCssTaskAttribute("V. Arranque y Soporte", "font-weight", "bold");
+
+//============================================================================================
+
+var observer = new MutationObserver(function () {
+	console.log("++++ ");
+    $.each($('text'), function (index, label) {
+		console.log(">> "+index+" / "+label);
+      var rowIndex = data.getFilteredRows([{
+        column: 1,
+        value: $(label).text()
+      }]);
+      if (rowIndex.length > 0) {
+        $(label).attr('background-color', 'red')
+      }
+    });
+});
+
+observer.observe(container, {
+    childList: true,
+    subtree: true
+  })
+  
+_htmlElementGantt.refresh();
+
+//============================================================================================
+
 '1_Preparation'
 '1.3_Accesos'
 

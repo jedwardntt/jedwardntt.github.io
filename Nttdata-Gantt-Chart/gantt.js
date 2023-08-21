@@ -76,12 +76,14 @@ var _htmlElementGantt;
 		  */
 		]);
 	
+		// font-weight: bold;
+
 		var options = {
 		  gantt: {
 			trackHeight: 17,
 			barHeight:   12,
 			labelStyle: {
-				fontSize: 10
+				fontSize: 11
 			},
 			arrow: {
 				angle: 100,
@@ -341,31 +343,83 @@ var _htmlElementGantt;
 		}
 
 		setTaskProperty(taskId, propertyName, newValue){
-			if(propertyName == "Duration" && (newValue =="" || isNaN(newValue))){
-				newValue = 0;
-			}
 			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - taskId: "+taskId+" / propertyName: "+propertyName+" / newValue: "+newValue);
+
+			if(propertyName == "Duration"){
+				if(newValue =="" || isNaN(newValue)){
+					newValue = 0;
+				}
+				
+				const oldDuration      = this.data.getTaskProperty(taskId, propertyName);
+				const durationChangePercentage = newValue / oldDuration;
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - durationChangePercentage: "+durationChangePercentage);
+				
+				var dependencies = this.getTaskProperty(taskId, "Dependencies");
+				//if(dependencies !== null){ // If there is dependencies (taskId has parents)
+				if(taskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
+					var totalChildrenDuration = this.getChildrenDurationSum(taskId) + Number(newValue);
+					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - totalChildrenDuration: "+totalChildrenDuration);
+					this.refreshParentDuration(dependencies, totalChildrenDuration);
+				}else{ // Else, this is a stage (not a task)
+					if(durationChangePercentage != 1){
+						this.refreshChildrenDuration(taskId, durationChangePercentage);
+					}else{
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - No changes on stage duration");
+					}					
+				}
+			}
+			
 			this.data.setTaskProperty(taskId, propertyName, newValue);
 
 			// Update dataClone task
 			if(this.dataClone !== undefined){
 				this.dataClone.setTaskProperty(taskId, propertyName, newValue);
-			}
-			if(propertyName == "Duration"){
-				var dependencies = this.getTaskProperty(taskId, "Dependencies");
-				if(dependencies !== null){ // If this is not the fist stage ('1_Preparation')
-					if(taskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
-						var totalDuration = this.getChildrenDurationSum(taskId) + Number(newValue);
-						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - totalDuration: "+totalDuration);
-						this.refreshParentDuration(dependencies, totalDuration);
-					}else{
-						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - UPDATE SUB-TASKS DURATION - PENDING TO IMPLEMENT !!!!!!!!!!!!!!!!!!!!!!");
+			} 
+
+			this.refresh();
+		}
+
+		refreshChildrenDuration(stageId, durationChangePercentage){
+			if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+")");
+			var isThisTheLastTaskOfTheStage = true;
+			for (var rowIndex = 0; rowIndex < this.data.getNumberOfRows(); rowIndex++) {// Run over the original "data" Data table
+				var rowTaskId       = this.data.getValue(rowIndex, 0); // TaskId
+				var rowDependencies = this.data.getValue(rowIndex, 7); // Dependencies
+				var rowDuration     = this.getTaskProperty(rowTaskId,"Duration");
+				
+				if(rowTaskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
+					// Check if needs recursive call
+					if(rowDependencies != null && rowDependencies.includes(stageId)){ // Child task found
+						isThisTheLastTaskOfTheStage = false;
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+") - rowTaskId:        "+rowTaskId);
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+") - rowDuration:      "+rowDuration);
+						var newDurationValue = rowDuration * durationChangePercentage;
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+") - newDurationValue: "+newDurationValue);
+						
+						// update duration for "data" and "dataClone"
+						this.data.setTaskProperty(rowTaskId,"Duration",newDurationValue); // We use the Data Table method to avoid recursive duration update for parent stage
+						if(this.dataClone != undefined){
+							this.dataClone.setTaskProperty(rowTaskId,"Duration",newDurationValue); // We use the Data Table method to avoid recursive duration update for parent stage
+						}	
+						
+						// Recursive call
+						return this.refreshChildrenDuration(rowTaskId, durationChangePercentage);
 					}
-				}else{
-					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"setTaskProperty(taskId,propertyName,newValue) - No dependencies found");
 				}
 			}
-			this.refresh();
+			if(isThisTheLastTaskOfTheStage){
+				var taskDuration = this.getTaskProperty(stageId,"Duration");
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+") - updateLastTask:   "+rowTaskId);
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+") - taskDuration:     "+taskDuration);
+				var newDurationValue = taskDuration * durationChangePercentage;
+				if(this.nttDebug===true)console.log(this.nttDebugPrefix+"refreshChildrenDuration("+stageId+" / "+durationChangePercentage+") - newDurationValue: "+newDurationValue);
+
+				// update duration for "data" and "dataClone"
+				this.data.setTaskProperty(stageId,"Duration",newDurationValue); // We use the Data Table method to avoid recursive duration update for parent stage
+				if(this.dataClone != undefined){
+					this.dataClone.setTaskProperty(stageId,"Duration",newDurationValue); // We use the Data Table method to avoid recursive duration update for parent stage
+				}	
+			}
 		}
 
 		getChildrenDurationSum(taskId){
@@ -373,20 +427,19 @@ var _htmlElementGantt;
 			for (var rowIndex = 0; rowIndex < this.data.getNumberOfRows(); rowIndex++) {// Run over the original "data" Data table
 				var rowTaskId       = this.data.getValue(rowIndex, 0); // TaskId
 				var rowDependencies = this.data.getValue(rowIndex, 7); // Dependencies
-				if(rowTaskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
-					if(rowDependencies != null && rowDependencies.includes(taskId)){
-						var rowDuration     = this.getTaskProperty(rowTaskId,"Duration"); // Duration
-						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - rowDependencies found: "+rowDependencies+" (In: "+rowTaskId+" / Duration: "+rowDuration+")");
+				
+				if(rowDependencies != null && rowDependencies.includes(taskId)){
+					if(rowTaskId.includes(".")){ // If this taskId is not a stage (tasks group) then check dependencies
+						var rowDuration     = this.getTaskProperty(rowTaskId,"Duration"); 
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - rowDependencies found: rowTaskId: "+rowTaskId+" / rowDependencies: "+rowDependencies+" (In: "+rowTaskId+" / Duration: "+rowDuration+")");
 						return rowDuration + this.getChildrenDurationSum(rowTaskId);
+					}else{
+						if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - taskId is a stage (tasks group) return 0: "+taskId);
+						return 0;
 					}
-					const duration = this.getTaskProperty(taskId,"Duration");
-					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - Stop recursive call - duration for \""+taskId+"\": "+duration);
-					return duration;					
-				}else{
-					if(this.nttDebug===true)console.log(this.nttDebugPrefix+"getChildrenDurationSum(taskId) - taskId is a stage (tasks group) return 0: "+taskId);
-					return 0
 				}
 			}
+			return 0; // there is no more children
 		}
 
 		// Refresh duration for all parent (parent stage or tasks group)
@@ -413,6 +466,10 @@ var _htmlElementGantt;
 		getTaskProperty(taskId, propertyName){
 			return this.data.getTaskProperty(taskId, propertyName);
 		}		
+
+		getTaskDuration(taskId){
+			return this.getTaskProperty(taskId, "Duration");
+		}
 		
 		getSelectedTaskId(){
 			var selection = this.chart.getSelection();
